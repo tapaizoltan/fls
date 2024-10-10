@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('financialrisks', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->comment('cég vagy szervezet neve');
-            $table->string('registration_number', length:20)->comment('nyilvántartási szám');
-            $table->string('tax_number', length:20)->comment('adószám');
-            $table->date('payment_deadline')->nullable()->comment('fizetési határidő');
-            $table->longText('description')->nullable()->comment('leírás');
+            $table->integer('customer_id');
+            $table->integer('user_id');
             $table->tinyInteger('financial_risk_rate')->nullable()->comment('pénzügyi kockázati ráta 0-9');
             $table->longText('justification_of_risk')->nullable()->comment('kockázat indokoltsága');
             $table->timestamps();
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('financialrisks');
     }
 };
