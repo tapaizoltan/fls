@@ -34,7 +34,7 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
-    protected static ?string $navigationIcon = 'tabler-pointer-dollar';
+    protected static ?string $navigationIcon = 'fls-users-three';
     protected static ?string $modelLabel = 'ügyfél';
     protected static ?string $pluralModelLabel = 'ügyfelek';
 
@@ -174,7 +174,7 @@ class CustomerResource extends Resource
                                     if ($riskLevel <= 2)
                                     {
                                         $riskLevelText ='
-                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:green; float:left; position:relative;">
+                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:rgb(38,186,75); float:left; position:relative;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" stroke-width="0" fill="currentColor" />
                                                 </svg>
@@ -183,7 +183,7 @@ class CustomerResource extends Resource
                                     if ($riskLevel >= 3 && $riskLevel <= 5)
                                     {
                                         $riskLevelText = '
-                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:orange; float:left; position:relative;">
+                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:rgb(240,141,14); float:left; position:relative;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 13a1 1 0 0 0 -.993 .883l-.007 .117l.007 .127a1 1 0 0 0 1.986 0l.007 -.117l-.007 -.127a1 1 0 0 0 -.993 -.883zm1.368 -6.673a2.98 2.98 0 0 0 -3.631 .728a1 1 0 0 0 1.44 1.383l.171 -.18a.98 .98 0 0 1 1.11 -.15a1 1 0 0 1 -.34 1.886l-.232 .012a1 1 0 0 0 .111 1.994a3 3 0 0 0 1.371 -5.673z" stroke-width="0" fill="currentColor" />
                                                 </svg>
@@ -192,7 +192,7 @@ class CustomerResource extends Resource
                                     if ($riskLevel >= 6)
                                     {
                                         $riskLevelText = '
-                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:red; float:left; position:relative;">
+                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:rgb(231,43,53); float:left; position:relative;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm.01 13l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor" />
                                                 </svg>
@@ -319,26 +319,26 @@ class CustomerResource extends Resource
                 ->label('Pénzügyi kockázat')
                 ->formatStateUsing(function($state): HtmlString{
                     $rate0Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:green;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(38,186,75);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>';
                     $rate0Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:green;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(38,186,75);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate1Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:green;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(38,186,75);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>';
                     $rate1Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:green;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(38,186,75);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -360,14 +360,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate2Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:green;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(38,186,75);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate2Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:green;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(38,186,75);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -389,14 +389,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate3Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:orange;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(240,141,14);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 13a1 1 0 0 0 -.993 .883l-.007 .117l.007 .127a1 1 0 0 0 1.986 0l.007 -.117l-.007 -.127a1 1 0 0 0 -.993 -.883zm1.368 -6.673a2.98 2.98 0 0 0 -3.631 .728a1 1 0 0 0 1.44 1.383l.171 -.18a.98 .98 0 0 1 1.11 -.15a1 1 0 0 1 -.34 1.886l-.232 .012a1 1 0 0 0 .111 1.994a3 3 0 0 0 1.371 -5.673z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate3Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:orange;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(240,141,14);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -418,14 +418,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate4Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:orange;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(240,141,14);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 13a1 1 0 0 0 -.993 .883l-.007 .117l.007 .127a1 1 0 0 0 1.986 0l.007 -.117l-.007 -.127a1 1 0 0 0 -.993 -.883zm1.368 -6.673a2.98 2.98 0 0 0 -3.631 .728a1 1 0 0 0 1.44 1.383l.171 -.18a.98 .98 0 0 1 1.11 -.15a1 1 0 0 1 -.34 1.886l-.232 .012a1 1 0 0 0 .111 1.994a3 3 0 0 0 1.371 -5.673z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate4Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:orange;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(240,141,14);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -448,14 +448,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate5Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:orange;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(240,141,14);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 13a1 1 0 0 0 -.993 .883l-.007 .117l.007 .127a1 1 0 0 0 1.986 0l.007 -.117l-.007 -.127a1 1 0 0 0 -.993 -.883zm1.368 -6.673a2.98 2.98 0 0 0 -3.631 .728a1 1 0 0 0 1.44 1.383l.171 -.18a.98 .98 0 0 1 1.11 -.15a1 1 0 0 1 -.34 1.886l-.232 .012a1 1 0 0 0 .111 1.994a3 3 0 0 0 1.371 -5.673z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate5Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:orange;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(240,141,14);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -477,14 +477,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate6Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm.01 13l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate6Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -506,14 +506,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate7Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm.01 13l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate7Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -535,14 +535,14 @@ class CustomerResource extends Resource
                         </div>
                     ';
                     $rate8Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm.01 13l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor" />
                             </svg>
                         </div>
                     ';
                     $rate8Full = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 6.66a2 2 0 0 0 -1.977 1.697l-.018 .154l-.005 .149l.005 .15a2 2 0 1 0 1.995 -2.15z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -565,7 +565,7 @@ class CustomerResource extends Resource
                     ';
 
                     $rate9Active = '
-                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:red;">
+                        <div style="display: inline-block; margin-right:-4px; margin-bottom:-4px; color:rgb(231,43,53);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm.01 13l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor" />
                             </svg>
@@ -689,5 +689,13 @@ class CustomerResource extends Resource
             'addresses' => Pages\ManageCustomerAddresses::route('/{record}/addresses'),
             'financialrisks' => Pages\ManageCustomerFinancialrisks::route('/{record}/financialrisks'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi ügyfél van már rögzítve
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::all()->count();
     }
 }
