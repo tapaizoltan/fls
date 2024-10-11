@@ -34,11 +34,12 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
-    protected static ?string $navigationIcon = 'fls-users-three';
+    protected static ?string $navigationGroup = 'Értékesítés';
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
     protected static ?string $modelLabel = 'ügyfél';
     protected static ?string $pluralModelLabel = 'ügyfelek';
-
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

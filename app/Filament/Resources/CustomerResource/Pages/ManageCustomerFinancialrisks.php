@@ -19,7 +19,7 @@ class ManageCustomerFinancialrisks extends ManageRelatedRecords
 
     protected static string $relationship = 'financialrisks';
 
-    protected static ?string $navigationIcon = 'tabler-discount-check';
+    protected static ?string $navigationIcon = 'tabler-stars';
 
     public static function getNavigationLabel(): string
     {
