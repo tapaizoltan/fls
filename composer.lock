@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a723e5a63b00212c335378277bb773c5",
+    "content-hash": "4f1ad844973436d274380d535f974843",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4403,6 +4403,47 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.4"
             },
             "time": "2024-06-10T01:18:23+00:00"
+        },
+        {
+            "name": "pzs/nav-online-invoice",
+            "version": "v3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pzs/nav-online-invoice.git",
+                "reference": "fcc8dcf68b0e78d329712ef5936ddd66a39a84bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pzs/nav-online-invoice/zipball/fcc8dcf68b0e78d329712ef5936ddd66a39a84bc",
+                "reference": "fcc8dcf68b0e78d329712ef5936ddd66a39a84bc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "ext-openssl": "*",
+                "ext-simplexml": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "NavOnlineInvoice": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A PHP interface for Online Invoice Data Reporting of Hungarian Tax Office (NAV)",
+            "support": {
+                "issues": "https://github.com/pzs/nav-online-invoice/issues",
+                "source": "https://github.com/pzs/nav-online-invoice/tree/v3.0.3"
+            },
+            "time": "2024-06-29T08:53:42+00:00"
         },
         {
             "name": "ralouphie/getallheaders",

@@ -13,6 +13,19 @@ db_password=root
 
 clear
 
+# Backup folder létrehozása
+if [ -d /var/www/html/$project_folder/database/backup ]
+	then
+		echo "Backup mappa letezik..."
+		sleep 1
+ 	else
+		echo "Backup mappa letrehozasa..."
+		sleep 1
+    	mkdir /var/www/html/$project_folder/database/backup
+		echo "Backup mappa letrehozasa... OK!"
+		sleep 1
+fi
+
 # Adatbázis mentés
 echo "MySql adatok mentese..."
 sleep 1
