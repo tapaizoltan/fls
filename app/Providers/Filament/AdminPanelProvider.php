@@ -35,8 +35,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             */
             ->colors([
-                'primary' => 'rgb(90, 189, 110)',
+                'primary' => 'rgb(216, 123,58)',
             ])
+            ->brandName('fls :: financial lead service')
+            ->brandLogo(asset('images/fls_app_logo_light.png'))
+            ->darkModeBrandLogo(asset('images/fls_app_logo_dark.png'))
+            ->brandLogoHeight('6rem')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

@@ -9,4 +9,5 @@ class Settings extends Cluster
 {
     protected static ?string $navigationIcon = 'tabler-adjustments-cog';
     protected static ?string $navigationLabel = 'Beállítások';
+    protected static ?int $navigationSort = 6;
 }
