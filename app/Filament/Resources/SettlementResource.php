@@ -46,6 +46,7 @@ class SettlementResource extends Resource
                 ->label('Település neve')
                 ->searchable(),
             ])
+            ->openRecordUrlInNewTab()
             ->filters([
                 //
             ])

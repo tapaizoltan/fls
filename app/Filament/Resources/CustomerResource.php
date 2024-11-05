@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
@@ -26,7 +27,6 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\ToggleButtons;
 use App\Filament\Resources\CustomerResource\Pages;
-use AnourValar\EloquentSerialize\Tests\Models\Post;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 
@@ -234,28 +234,12 @@ class CustomerResource extends Resource
                                 //->disabled(!auth()->user()->hasRole(['super_admin']))
                                 ->default(0)
                                 ->live(),
-                                
-                                
-                                
-                                RichEditor::make('justification_of_risk')
+
+                                Textarea::make('justification_of_risk')
                                 ->label('Kockázat indoklása')
                                 ->helperText('Itt röviden megindokolhatja, hogy az adott ügyfelet miért a kiválasztott kockázati szinten tartózkodik.')
-                                ->toolbarButtons([
-                                    //'attachFiles',
-                                    'blockquote',
-                                    'bold',
-                                    'bulletList',
-                                    //'codeBlock',
-                                    'h2',
-                                    'h3',
-                                    'italic',
-                                    'link',
-                                    'orderedList',
-                                    'redo',
-                                    'strike',
-                                    'underline',
-                                    'undo',
-                                ])
+                                ->rows(5)
+                                ->cols(20)
                                 ->columnSpanFull(),
 
                                 ])->columns([
@@ -650,6 +634,24 @@ class CustomerResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
+                    // Action::make('Új esemény')
+                    //     ->icon('tabler-timeline-event-text'),
+
+                    Action::make('Új pézügyi kockázat')
+                    ->modalHeading('Új pénzügyi kocázat')
+                    ->icon('tabler-stars')
+                    ->form([
+                        Textarea::make('justification_of_risk')
+                            ->label('Kockázat indoklása')
+                            ->helperText('Itt röviden megindokolhatja, hogy az adott ügyfelet miért a kiválasztott kockázati szinten tartózkodik.')
+                            ->rows(5)
+                            ->cols(20)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function (array $data, Customer $record): void {
+                        $record->justification_of_risk=$data['justification_of_risk'];
+                        $record->save();
+                    }),
                     EditAction::make()->icon('tabler-pencil'),
                     DeleteAction::make()->icon('tabler-trash'),
                 ])
@@ -684,7 +686,7 @@ class CustomerResource extends Resource
     {
         return [
             'index' => Pages\ListCustomers::route('/'),
-            'create' => Pages\CreateCustomer::route('/create'),
+            // 'create' => Pages\CreateCustomer::route('/create'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
             'contacts' => Pages\ManageCustomerContacts::route('/{record}/contacts'),
             'addresses' => Pages\ManageCustomerAddresses::route('/{record}/addresses'),
