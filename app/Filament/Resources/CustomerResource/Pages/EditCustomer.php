@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditCustomer extends EditRecord
 {
     protected static string $resource = CustomerResource::class;
+    protected static ?string $navigationLabel = 'Ügyfél szerkesztése';
     protected static ?string $navigationIcon = 'tabler-writing';
 
     protected function getHeaderActions(): array
