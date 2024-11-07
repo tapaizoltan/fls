@@ -9,9 +9,14 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Group;
+use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Password;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use STS\FilamentImpersonate\Tables\Actions\Impersonate;
@@ -29,7 +34,8 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')->label('Név')
+                TextInput::make('name')
+                    ->label('Név')
                     ->required()
                     ->maxLength(255)
                     ->autofocus(),
@@ -40,8 +46,38 @@ class UserResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
-                TextInput::make('phone')->label('Telefonszám')
+                TextInput::make('phone')
+                    ->label('Telefonszám')
                     ->maxLength(255),
+
+                Group::make()->schema([
+                    TextInput::make('password')->label('Jelszó')
+                        ->password()
+                        ->revealable()
+                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                        ->dehydrated(fn($state) => filled($state))
+                        ->required(fn(string $operation): bool => $operation === 'create')
+                        ->rule(Password::default())
+                        ->confirmed()
+                        ->reactive(),
+                    TextInput::make('password_confirmation')->label('Jelszó megerősítése')
+                        ->password()
+                        ->revealable()
+                        ->dehydrated(false)
+                        ->disabled(fn(\Filament\Forms\Get $get) => !filled($get('password'))),
+                ])->columns([
+                    'sm' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                ]),
+                Select::make('roles')
+                    ->label('Jogosultságok')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 
@@ -50,25 +86,26 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                ->label('Név')
-                ->searchable(),
+                    ->label('Név')
+                    ->searchable(),
                 TextColumn::make('email')
-                ->label('E-mail cím'),
-                TextColumn::make('company.name')
-                ->label('Társaság'),
+                    ->label('E-mail cím'),
+                TextColumn::make('roles.name')
+                    ->label('Jogosultság')
+                    ->badge(),
                 TextColumn::make('last_login_at')
-                ->label('Utoljára itt')
-                ->formatStateUsing(function($state)
-                {
-                    $diff_day_nums = date_diff(date_create($state), date_create('now'))->format('%a');
-                    if ($diff_day_nums == 0){$last_login = 'mai napon';}
-                    if ($diff_day_nums != 0)
-                    {
-                        $last_login = 'utoljára '.$diff_day_nums.' napja';
-                    }
-                    return '<p>'.Carbon::parse($state)->translatedFormat('Y F d').'</p>
-                    <p class="text-xs text-gray-500 dark: text-xs text-gray-400">'.$last_login .'</p>';
-                })->html()
+                    ->label('Utoljára itt')
+                    ->formatStateUsing(function ($state) {
+                        $diff_day_nums = date_diff(date_create($state), date_create('now'))->format('%a');
+                        if ($diff_day_nums == 0) {
+                            $last_login = 'mai napon';
+                        }
+                        if ($diff_day_nums != 0) {
+                            $last_login = 'utoljára ' . $diff_day_nums . ' napja';
+                        }
+                        return '<p>' . Carbon::parse($state)->translatedFormat('Y F d') . '</p>
+                    <p class="text-xs text-gray-500 dark: text-xs text-gray-400">' . $last_login . '</p>';
+                    })->html()
             ])
             ->filters([
                 //
@@ -78,11 +115,10 @@ class UserResource extends Resource
                 Tables\Actions\DeleteAction::make()->hiddenLabel()->tooltip('Törlés')->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false)->tooltip('Végleges törlés'),
                 Tables\Actions\RestoreAction::make()->label(false)->tooltip('Helyteállítás'),
-                /*
-                Impersonate::make()
-                ->guard('web')
-                ->redirectTo(route('filament.admin.pages.dashboard'))
-                ->icon('tabler-ghost-3'),*/
+                // Impersonate::make()
+                // ->guard('web')
+                // ->redirectTo(route('filament.admin.pages.dashboard'))
+                // ->icon('tabler-ghost-3'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
