@@ -638,8 +638,11 @@ class CustomerResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
+                    Action::make('Új teendő')
+                        ->icon('tabler-tooltip'),
+
                     Action::make('Új esemény')
-                        ->icon('tabler-timeline-event-text'),
+                        ->icon('tabler-timeline-event-plus'),
 
                     Action::make('Új pézügyi kockázat')
                         ->modalHeading('Új pénzügyi kocázat')
@@ -706,46 +709,27 @@ class CustomerResource extends Resource
                                     '9' => 'danger'
                                 ])
                                 //->disabled(!auth()->user()->hasRole(['super_admin']))
-                                ->default(function (Customer $customer){
+                                ->default(function (Customer $customer) {
                                     $current_risk_rate = null;
-                                    if ($customer->financial_risk_rate==0)
-                                    {
+                                    if ($customer->financial_risk_rate == 0) {
                                         $current_risk_rate = 0;
-                                    }
-                                    elseif ($customer->financial_risk_rate==1)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 1) {
                                         $current_risk_rate = 1;
-                                    }
-                                    elseif ($customer->financial_risk_rate==2)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 2) {
                                         $current_risk_rate = 2;
-                                    }
-                                    elseif ($customer->financial_risk_rate==3)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 3) {
                                         $current_risk_rate = 3;
-                                    }
-                                    elseif ($customer->financial_risk_rate==4)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 4) {
                                         $current_risk_rate = 4;
-                                    }
-                                    elseif ($customer->financial_risk_rate==5)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 5) {
                                         $current_risk_rate = 5;
-                                    }
-                                    elseif ($customer->financial_risk_rate==6)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 6) {
                                         $current_risk_rate = 6;
-                                    }
-                                    elseif ($customer->financial_risk_rate==7)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 7) {
                                         $current_risk_rate = 7;
-                                    }
-                                    elseif ($customer->financial_risk_rate==8)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 8) {
                                         $current_risk_rate = 8;
-                                    }
-                                    elseif ($customer->financial_risk_rate==9)
-                                    {
+                                    } elseif ($customer->financial_risk_rate == 9) {
                                         $current_risk_rate = 9;
                                     }
 
@@ -766,9 +750,9 @@ class CustomerResource extends Resource
                             $record->save();
 
                             Notification::make()
-                            ->title('Az Új pénzügyi kockázat beállítása sikerült!')
-                            ->success()
-                            ->send();
+                                ->title('Az Új pénzügyi kockázat beállítása sikerült!')
+                                ->success()
+                                ->send();
                         }),
                     EditAction::make()->icon('tabler-pencil'),
                     DeleteAction::make()->icon('tabler-trash'),
@@ -845,7 +829,7 @@ class CustomerResource extends Resource
                                             $industryBadge .= '</div>';
                                         }
 
-                                        return '<p style="margin-bottom: 2px;"><span style="color: #d87b3a; font-size:16pt; font-weight:bold;">' . $record->name . '</span></p>
+                                        return '<p style="margin-bottom: 12px;"><span style="color: #d87b3a; font-size:16pt; font-weight:bold;">' . $record->name . '</span></p>
                                         <p style="margin-bottom: -6px;"><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">Adószám: </span><span class="text-custom-600 dark:text-custom-400" style="font-size:10pt;">' . $record->tax_number . '</span></p>
                                         <p style="margin-bottom: 10px;"><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">Cégj.szám: </span><span class="text-custom-600 dark:text-custom-400" style="font-size:10pt;">' . $record->registration_number . '</span></p>
                                         <p>' . $industryBadge . '</p>';
@@ -1135,7 +1119,7 @@ class CustomerResource extends Resource
                                         }
                                         if ($state == '1') {
                                             return new HtmlString('
-                                            <p>' . $rate0Full . $rate1Active . $rate2Empty . $rate3Empty . $rate4Empty . $rate5Empty . $rate6Empty . $rate7Empty . $rate8Empty . $rate9Empty . '</p>' . $lowRiskLevel. $justification_of_risk);
+                                            <p>' . $rate0Full . $rate1Active . $rate2Empty . $rate3Empty . $rate4Empty . $rate5Empty . $rate6Empty . $rate7Empty . $rate8Empty . $rate9Empty . '</p>' . $lowRiskLevel . $justification_of_risk);
                                         }
                                         if ($state == '2') {
                                             return new HtmlString('
@@ -1173,6 +1157,28 @@ class CustomerResource extends Resource
                             ]),
 
 
+                    ]),
+
+                Split::make([
+                    InfolistsSection::make('Kapcsolatok')
+                        ->description('Az ügyfélhez rögzített kapcsolat(ok) listája.')
+                        ->icon('tabler-address-book')
+                        ->schema([
+                            //..
+                        ]),
+                    InfolistsSection::make('Címek')
+                        ->description('Az ügyfélhez rögzített címe(ek) listája.')
+                        ->icon('tabler-map-pin-2')
+                        ->schema([
+                            //..
+                        ]),
+                ])->from('xl')->columnSpanFull(),
+
+                InfolistsSection::make('Előzmények')
+                    ->description('Nyomonkövethető az ügyfélhez köthető összes esemény.')
+                    ->icon('tabler-timeline-event-text')
+                    ->schema([
+                        //..
                     ]),
             ]);
     }
