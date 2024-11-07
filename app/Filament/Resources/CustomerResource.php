@@ -278,7 +278,7 @@ class CustomerResource extends Resource
             ->description('Ebben a modulban rögzítheti és kezelheti azokat a társaságokat, vállalkozásokat akiket megkeresett ajánlatával.')
             ->emptyStateHeading('Nincs megjeleníthető ügyfél, társaság, vállalkozás.')
             ->emptyStateDescription('Az "Új ügyfél" gombra kattintva rögzíthet új ügyfelet, társaságot, vállalkozást a rendszerhez.')
-            ->emptyStateIcon('tabler-database-x')
+            ->emptyStateIcon('tabler-database-search')
             ->recordUrl(
                 fn($record): string => route('filament.admin.resources.customers.view', ['record' => $record]),
             )

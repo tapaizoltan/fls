@@ -3,9 +3,10 @@
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum EventsTypes: string implements HasColor, HasLabel
+enum EventTypes: string implements HasColor, HasIcon, HasLabel
 {
     case Mapping = "1"; //feltérképezés
     case IssuingQuotation = "2"; //árajánlat kiadás
@@ -32,6 +33,17 @@ enum EventsTypes: string implements HasColor, HasLabel
             self::SaleInProgress => 'warning',
             self::ClosedWon => 'success',
             self::ClosedLost => 'danger',
+        };
+    }
+
+    public function getIcon(): ?string
+    {
+        return match ($this) {
+            self::Mapping => 'tabler-radar',
+            self::IssuingQuotation => 'tabler-replace',
+            self::SaleInProgress => 'tabler-cash',
+            self::ClosedWon => 'tabler-thumb-up',
+            self::ClosedLost => 'tabler-thumb-down',
         };
     }
 }

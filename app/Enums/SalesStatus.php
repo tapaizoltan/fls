@@ -10,7 +10,7 @@ enum SalesStatus: string implements HasColor, HasIcon, HasLabel
 {
     case DemandAssessment = "1"; //igényfelmérés
     case Quotation = "2"; //árajánlat adás
-    Case OfferFollowUp ="3"; //árajánlat utánkövetés
+    Case OfferFollowUp = "3"; //árajánlat utánkövetés
     case ConclusionOfContract = "4"; //szerződéskötés
     case SuccessfullyClosed = "5"; //sikeres lezárt
     case UnsuccessfullyClosed = "6"; //sikertelen lezárt
@@ -21,7 +21,7 @@ enum SalesStatus: string implements HasColor, HasIcon, HasLabel
             self::DemandAssessment => 'Igényfelmérés',
             self::Quotation => 'Árajánlat adás',
             self::OfferFollowUp => 'Árajánlat utánkövetés',
-            self::ConclusionOfContract => 'Szerződéskötés',
+            self::ConclusionOfContract => 'Szerződéskötés, számlázás',
             self::SuccessfullyClosed => 'Sikeresen lezárt',
             self::UnsuccessfullyClosed => 'Sikertelen lezárt',
         };
