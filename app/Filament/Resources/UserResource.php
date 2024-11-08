@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -64,7 +65,7 @@ class UserResource extends Resource
                         ->password()
                         ->revealable()
                         ->dehydrated(false)
-                        ->disabled(fn(\Filament\Forms\Get $get) => !filled($get('password'))),
+                        ->disabled(fn(Get $get) => !filled($get('password'))),
                 ])->columns([
                     'sm' => 1,
                     'md' => 2,
@@ -115,10 +116,10 @@ class UserResource extends Resource
                 Tables\Actions\DeleteAction::make()->hiddenLabel()->tooltip('Törlés')->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false)->tooltip('Végleges törlés'),
                 Tables\Actions\RestoreAction::make()->label(false)->tooltip('Helyteállítás'),
-                // Impersonate::make()
-                // ->guard('web')
-                // ->redirectTo(route('filament.admin.pages.dashboard'))
-                // ->icon('tabler-ghost-3'),
+                Impersonate::make()
+                ->guard('web')
+                ->redirectTo(route('filament.admin.pages.dashboard'))
+                ->icon('tabler-ghost-3'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
