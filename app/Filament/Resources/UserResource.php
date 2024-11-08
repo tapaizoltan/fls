@@ -27,9 +27,12 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'tabler-user-square-rounded';
     protected static ?string $modelLabel = 'felhasználó';
     protected static ?string $pluralModelLabel = 'felhasználók';
+
+    protected static ?string $navigationGroup = 'Rendszer';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -42,6 +45,7 @@ class UserResource extends Resource
                     ->autofocus(),
 
                 TextInput::make('email')
+                    ->prefixIcon('tabler-at')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true)
@@ -49,10 +53,13 @@ class UserResource extends Resource
 
                 TextInput::make('phone')
                     ->label('Telefonszám')
+                    ->prefixIcon('tabler-device-mobile')
+                    ->tel()
                     ->maxLength(255),
 
                 Group::make()->schema([
                     TextInput::make('password')->label('Jelszó')
+                        ->prefixIcon('tabler-password-user')
                         ->password()
                         ->revealable()
                         ->dehydrateStateUsing(fn($state) => Hash::make($state))
@@ -62,6 +69,7 @@ class UserResource extends Resource
                         ->confirmed()
                         ->reactive(),
                     TextInput::make('password_confirmation')->label('Jelszó megerősítése')
+                        ->prefixIcon('tabler-password-user')
                         ->password()
                         ->revealable()
                         ->dehydrated(false)
@@ -75,6 +83,7 @@ class UserResource extends Resource
                 ]),
                 Select::make('roles')
                     ->label('Jogosultságok')
+                    ->prefixIcon('tabler-shield-lock')
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload()

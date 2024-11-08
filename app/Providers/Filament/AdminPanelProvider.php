@@ -41,6 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/fls_app_logo_light.png'))
             ->darkModeBrandLogo(asset('images/fls_app_logo_dark.png'))
             ->brandLogoHeight('6rem')
+            ->favicon(asset('images/favicon.ico'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
