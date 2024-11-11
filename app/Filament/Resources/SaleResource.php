@@ -82,69 +82,69 @@ class SaleResource extends Resource
                                     ->label('Típus')
                                     ->inline()
                                     ->required()
-                                    ->options(EventTypes::class)
-                                    // ->options([
-                                    //     '1' => 'Feltérképezés',
-                                    //     '2' => 'Árajánlat kiadás',
-                                    //     '3' => 'Értékesítés folyamatban',
-                                    //     '4' => 'Lezárt nyert',
-                                    //     '5' => 'Lezárt vesztett',
-                                    // ])
-                                    // ->icons([
-                                    //     '1' => 'tabler-radar',
-                                    //     '2' => 'tabler-replace',
-                                    //     '3' => 'tabler-cash',
-                                    //     '4' => 'tabler-thumb-up',
-                                    //     '5' => 'tabler-thumb-down',
-                                    // ])
-                                    // ->colors([
-                                    //     '1' => 'info',
-                                    //     '2' => 'warning',
-                                    //     '3' => 'warning',
-                                    //     '4' => 'success',
-                                    //     '5' => 'danger',
-                                    // ])
+                                    ->live()
+                                    //->options(EventTypes::class)
+                                    ->options([
+                                        '1' => 'Feltérképezés',
+                                        '2' => 'Árajánlat kiadás',
+                                        '3' => 'Értékesítés folyamatban',
+                                        '4' => 'Lezárt nyert',
+                                        '5' => 'Lezárt vesztett',
+                                    ])
+                                    ->icons([
+                                        '1' => 'tabler-radar',
+                                        '2' => 'tabler-replace',
+                                        '3' => 'tabler-cash',
+                                        '4' => 'tabler-thumb-up',
+                                        '5' => 'tabler-thumb-down',
+                                    ])
+                                    ->colors([
+                                        '1' => 'info',
+                                        '2' => 'warning',
+                                        '3' => 'warning',
+                                        '4' => 'success',
+                                        '5' => 'danger',
+                                    ])
                                     ->default(1),
                                 ToggleButtons::make('status')
                                     ->helperText('Válassza ki az esemény státuszát.')
                                     ->label('Státusz')
                                     ->inline()
-                                    ->options(SalesStatus::class)
-                                    ->required(),
-                                // ->options([
-                                //     '1' => 'Igényfelmérés',
-                                //     '2' => 'Árajánlat adás',
-                                //     '3' => 'Árajánlat utánkövetés',
-                                //     '4' => 'Szerződéskötés, számlázás',
-                                //     '5' => 'Sikeres lezárt',
-                                //     '6' => 'Sikertelen lezárt',
-                                // ])
-                                // ->icons([
-                                //     '1' => 'tabler-brand-flightradar24',
-                                //     '2' => 'tabler-file-symlink',
-                                //     '3' => 'tabler-reorder',
-                                //     '4' => 'tabler-heart-handshake',
-                                //     '5' => 'tabler-thumb-up',
-                                //     '6' => 'tabler-thumb-down',
-                                // ])
-                                // ->colors([
-                                //     '1' => 'info',
-                                //     '2' => 'warning',
-                                //     '3' => 'warning',
-                                //     '4' => 'warning',
-                                //     '5' => 'success',
-                                //     '6' => 'danger',
-                                // ])
-
-                                // ->default(function (Get $get) {
-                                //     if ($get('event_type') == 1) {
-                                //         return 1;
-                                //     }
-                                //     if ($get('event_type') == 2) {
-                                //         return 2;
-                                //     }
-                                // })
-                                // ->columnSpan('full'),
+                                    // ->options(SalesStatus::class)
+                                    ->required()
+                                    ->options(function (Get $get) {
+                                        if ($get('event_type') == 1) {
+                                            return ['1' => 'Igényfelmérés',];
+                                        }
+                                        if ($get('event_type') == 2) {
+                                            return ['2' => 'Árajánlat adás', '3' => 'Árajánlat utánkövetés',];
+                                        }
+                                        if ($get('event_type') == 3) {
+                                            return ['4' => 'Szerződéskötés, számlázás',];
+                                        }
+                                        if ($get('event_type') == 4) {
+                                            return ['4' => 'Sikeres lezárt',];
+                                        }
+                                        if ($get('event_type') == 5) {
+                                            return ['4' => 'Sikertelen lezárt',];
+                                        }
+                                    })
+                                    ->icons([
+                                        '1' => 'tabler-brand-flightradar24',
+                                        '2' => 'tabler-file-symlink',
+                                        '3' => 'tabler-reorder',
+                                        '4' => 'tabler-heart-handshake',
+                                        '5' => 'tabler-thumb-up',
+                                        '6' => 'tabler-thumb-down',
+                                    ])
+                                    ->colors([
+                                        '1' => 'info',
+                                        '2' => 'info',
+                                        '3' => 'info',
+                                        '4' => 'info',
+                                        '5' => 'info',
+                                        '6' => 'info',
+                                    ]),
 
                                 // == ezt kell átnézni majd live() miatt
 
@@ -290,11 +290,9 @@ class SaleResource extends Resource
                                     ->cols(20)
                                     ->columnSpan(1),
                             ]),
-                            Fieldset::make('Árajánlat(ok)')
-                            ->schema([
-
-                            ]),
-                            Fieldset::make('Sikertelen ügylet visszamérése')
+                        Fieldset::make('Árajánlat(ok)')
+                            ->schema([]),
+                        Fieldset::make('Sikertelen ügylet visszamérése')
                             ->schema([
                                 ToggleButtons::make('cause_of_loss')
                                     ->helperText('Válassza ki az elvesztés okát.')

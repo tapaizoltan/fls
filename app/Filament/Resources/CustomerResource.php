@@ -3,13 +3,19 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Infolists;
 use App\Models\Customer;
 use Filament\Forms\Form;
+use App\Enums\EventTypes;
+use App\Models\Saleevent;
+use App\Enums\CauseOfLoss;
+use App\Enums\SalesStatus;
 use Filament\Tables\Table;
 use App\Models\Industrytype;
+use App\Enums\WhereDidAFindUs;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
@@ -17,9 +23,13 @@ use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Group;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Livewire;
+
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -27,9 +37,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Split;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Pages\SubNavigationPosition;
-
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Forms\Components\Placeholder;
@@ -38,9 +48,11 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\CustomerResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Components\Grid as InfolistsGrid;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Infolists\Components\Group as InfolistsGroup;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use Filament\Infolists\Components\Section as InfolistsSection;
+use App\Filament\Resources\CustomerResource\Pages\ManageCustomerSaleevents;
 
 class CustomerResource extends Resource
 {
@@ -177,88 +189,7 @@ class CustomerResource extends Resource
                                         '2xl' => 2,
                                     ]),
 
-
-
-                                Fieldset::make('Pénzügyi kockázat')
-                                    ->schema([
-                                        Placeholder::make('documentation')
-                                            ->label('Pénzügyi kockázati szint')
-                                            ->content(function ($get): HtmlString {
-                                                $riskLevel = $get('financial_risk_rate');
-                                                if ($riskLevel <= 2) {
-                                                    $riskLevelText = '
-                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:rgb(38,186,75); float:left; position:relative;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" stroke-width="0" fill="currentColor" />
-                                                </svg>
-                                            </div><div style="float:left; position:relative; padding-top:24px; font-size:14pt;">Alacsony kockázati szint.</div></span>';
-                                                }
-                                                if ($riskLevel >= 3 && $riskLevel <= 5) {
-                                                    $riskLevelText = '
-                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:rgb(240,141,14); float:left; position:relative;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm0 13a1 1 0 0 0 -.993 .883l-.007 .117l.007 .127a1 1 0 0 0 1.986 0l.007 -.117l-.007 -.127a1 1 0 0 0 -.993 -.883zm1.368 -6.673a2.98 2.98 0 0 0 -3.631 .728a1 1 0 0 0 1.44 1.383l.171 -.18a.98 .98 0 0 1 1.11 -.15a1 1 0 0 1 -.34 1.886l-.232 .012a1 1 0 0 0 .111 1.994a3 3 0 0 0 1.371 -5.673z" stroke-width="0" fill="currentColor" />
-                                                </svg>
-                                            </div><div style="float:left; position:relative; padding-top:24px; font-size:14pt;">Közepes kockázati szint!</div></span>';
-                                                }
-                                                if ($riskLevel >= 6) {
-                                                    $riskLevelText = '
-                                            <span><div style="display: inline-block; margin-right:8px; margin-bottom:-10px; margin-top:10px; color:rgb(231,43,53); float:left; position:relative;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -19.995 .324l-.005 -.324l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72zm.01 13l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -8a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z" stroke-width="0" fill="currentColor" />
-                                                </svg>
-                                            </div><div style="float:left; position:relative; padding-top:24px; font-size:14pt;">Közepes kockázati szint!</div></span>';
-                                                }
-                                                return new HtmlString($riskLevelText);
-                                            }),
-
-                                        ToggleButtons::make('financial_risk_rate')
-                                            ->label(false)
-                                            ->helperText('Válassza ki az ügyfél pénzügyi kockázati szintjét.')
-                                            ->inline()
-                                            ->grouped()
-                                            ->options([
-                                                '0' => '0',
-                                                '1' => '1',
-                                                '2' => '2',
-                                                '3' => '3',
-                                                '4' => '4',
-                                                '5' => '5',
-                                                '6' => '6',
-                                                '7' => '7',
-                                                '8' => '8',
-                                                '9' => '9'
-                                            ])
-                                            ->colors([
-                                                '0' => 'success',
-                                                '1' => 'success',
-                                                '2' => 'success',
-                                                '3' => 'warning',
-                                                '4' => 'warning',
-                                                '5' => 'warning',
-                                                '6' => 'danger',
-                                                '7' => 'danger',
-                                                '8' => 'danger',
-                                                '9' => 'danger'
-                                            ])
-                                            //->disabled(!auth()->user()->hasRole(['super_admin']))
-                                            ->default(0)
-                                            ->live(),
-
-                                        Textarea::make('justification_of_risk')
-                                            ->label('Kockázat indoklása')
-                                            ->helperText('Itt röviden megindokolhatja, hogy az adott ügyfelet miért a kiválasztott kockázati szinten tartózkodik.')
-                                            ->rows(5)
-                                            ->cols(20)
-                                            ->columnSpanFull(),
-
-                                    ])->columns([
-                                        'sm' => 1,
-                                        'md' => 1,
-                                        'lg' => 1,
-                                        'xl' => 1,
-                                        '2xl' => 1,
-                                    ]),
+                                Hidden::make('financial_risk_rate')->default('0'),
 
                             ])->columnSpan([
                                 'sm' => 4,
@@ -297,6 +228,9 @@ class CustomerResource extends Resource
                                 $wrapText = '';
                             }
                             return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $text . $wrapText . '</span>');
+                        }
+                        else {
+                            return new HtmlString('');
                         }
                     })
                     ->searchable(['name', 'description']),
@@ -641,8 +575,231 @@ class CustomerResource extends Resource
                     Action::make('Új teendő')
                         ->icon('tabler-tooltip'),
 
-                    Action::make('Új esemény')
-                        ->icon('tabler-timeline-event-plus'),
+                    Action::make('Új értékesítési esemény')
+                        ->modalHeading('Új értékesítési esemény')
+                        ->icon('tabler-timeline-event-plus')
+                        ->form([
+                            Select::make('user_id')
+                                ->label('Felelős személy')
+                                ->helperText('Ha nem Ön a felelős zemély akkor válassza ki a folyamatért felelős személyt.')
+                                ->options(User::all()->pluck('name', 'id'))
+                                ->default(Auth::id())
+                                ->native(false)
+                                ->searchable(),
+                            Fieldset::make('Esemény')
+                                ->schema([
+                                    ToggleButtons::make('event_type')
+                                        ->label('Esemény típus')
+                                        ->helperText('Válassza ki az esemény típusát.')
+                                        ->inline()
+                                        ->required()
+                                        // ->options([
+                                        //     '1' => 'Feltérképezés',
+                                        //     '2' => 'Árajánlat kiadás',
+                                        //     '3' => 'Értékesítés folyamatban',
+                                        //     '4' => 'Lezárt nyert',
+                                        //     '5' => 'Lezárt vesztett',
+                                        // ])
+                                        ->options(EventTypes::class)
+                                        ->reactive()
+                                        // ->afterStateUpdated(fn(callable $set) => $set('status', null))
+                                        ->afterStateUpdated(function (callable $set, callable $get) {
+                                            $eventType = $get('event_type');
+
+                                            // Kiválasztható státuszok beállítása az event_type szerint
+                                            $statusOptions = match ($eventType) {
+                                                '1' => ['1' => 'Igényfelmérés'],
+                                                '2' => [
+                                                    '2' => 'Árajánlat adás',
+                                                    '3' => 'Árajánlat utánkövetés',
+                                                ],
+                                                '3' => ['4' => 'Szerződéskötés, számlázás'],
+                                                '4' => ['5' => 'Sikeres lezárt'],
+                                                '5' => ['6' => 'Sikertelen lezárt'],
+                                                default => [],
+                                            };
+
+                                            // Alapértelmezett státusz beállítása, ha csak egy opció elérhető
+                                            if (count($statusOptions) === 1) {
+                                                $set('status', array_key_first($statusOptions));
+                                            } else {
+                                                $set('status', null);
+                                            }
+                                        })
+                                        ->columnSpanFull(),
+                                    ToggleButtons::make('status')
+                                        ->label('Státusz')
+                                        // ->helperText('Válassza ki az esemény státuszát.')
+                                        ->helperText(function (callable $get) {
+                                            if ($get('event_type') === '2') {
+                                                return 'Válassza ki az esemény státuszát.';
+                                            }
+                                            else {return;}
+                                        })
+                                        ->inline()
+                                        ->required()
+                                        ->options(function (callable $get) {
+                                            $eventType = $get('event_type');
+                                            return match ($eventType) {
+                                                '1' => ['1' => 'Igényfelmérés'],
+                                                '2' => [
+                                                    '2' => 'Árajánlat adás',
+                                                    '3' => 'Árajánlat utánkövetés',
+                                                ],
+                                                '3' => ['4' => 'Szerződéskötés, számlázás'],
+                                                '4' => ['5' => 'Sikeres lezárt'],
+                                                '5' => ['6' => 'Sikertelen lezárt'],
+                                                default => [],
+                                            };
+                                        })
+                                        ->colors(function (callable $get) {
+                                            $eventType = $get('event_type');
+                                            return match ($eventType) {
+                                                '1' => ['1' => 'info'],
+                                                '2' => [
+                                                    '2' => 'warning',
+                                                    '3' => 'warning',
+                                                ],
+                                                '3' => ['4' => 'warning'],
+                                                '4' => ['5' => 'success'],
+                                                '5' => ['6' => 'danger'],
+                                                default => [],
+                                            };
+                                        })
+                                        ->icons(function (callable $get) {
+                                            $eventType = $get('event_type');
+                                            return match ($eventType) {
+                                                '1' => ['1' => 'tabler-message-question'],
+                                                '2' => [
+                                                    '2' => 'tabler-keyboard',
+                                                    '3' => 'tabler-s-turn-down',
+                                                ],
+                                                '3' => ['4' => 'tabler-writing-sign'],
+                                                '4' => ['5' => 'tabler-thumb-up'],
+                                                '5' => ['6' => 'tabler-thumb-down'],
+                                                default => [],
+                                            };
+                                        })
+                                        ->reactive()
+                                        ->columnSpanFull(),
+
+                                    // ez jelenik meg ha az esemény típusa feltérképezés
+                                    Select::make('where_did_a_find_us')
+                                        ->label('Hol talált ránk?')
+                                        ->helperText('Válassza ki a megkeresés formályát.')
+                                        ->options(WhereDidAFindUs::class)
+                                        ->native(false)
+                                        ->prefixIcon('tabler-ear-scan')
+                                        ->searchable()
+                                        ->required()
+                                        ->columnSpan(1)
+                                        ->visible(fn(callable $get) => $get('event_type') === '1'),
+                                    Textarea::make('what_are_you_interested_in')
+                                        ->label('Mi iránt érdeklődik?')
+                                        ->helperText('Írja le néhány sorban, hogy mi iránt érdeklődött az ügyfél.')
+                                        ->rows(5)
+                                        ->cols(20)
+                                        ->required()
+                                        ->columnSpan(2)
+                                        ->visible(fn(callable $get) => $get('event_type') === '1'),
+
+                                    // ez jelenik meg ha az esemény típusa árajánla kiadása és a status árajánlat adása
+                                    Fieldset::make('Értékesítési infók')
+                                        ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2' || $get('event_type') === '2' && $get('status') === '3')
+                                        ->schema([
+                                            DatePicker::make('date_of_offer')
+                                                //->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
+                                                ->helperText('Adja meg azt a dátumot amikor kiadta az árajánlatot')
+                                                ->label('Ajánlatadás dátuma')
+                                                ->prefixIcon('tabler-calendar')
+                                                ->weekStartsOnMonday()
+                                                ->placeholder(now())
+                                                ->displayFormat('Y-m-d')
+                                                ->required()
+                                                ->native(false)
+                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
+
+                                            DatePicker::make('expected_closing_date')
+                                                //->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
+                                                ->helperText('Adja meg azt a dátumot amikor várhatóan lezárásra kerül ez az esemény vagy ügylet.')
+                                                ->label('Várható lezárás dátuma')
+                                                ->prefixIcon('tabler-calendar')
+                                                ->weekStartsOnMonday()
+                                                ->placeholder(now())
+                                                ->displayFormat('Y-m-d')
+                                                ->required()
+                                                ->native(false)
+                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
+
+                                            TextInput::make('expected_sales_revenue')
+                                                ->label('Várható árbevétel')
+                                                ->helperText('Adja meg a prognosztizált árbevétel számszerű értékét.')
+                                                ->prefixIcon('tabler-abacus')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->required()
+                                                ->minLength(1)
+                                                ->maxLength(10)
+                                                // ->disabled(!auth()->user()->hasRole(['super_admin']))
+                                                //->suffix(fn(Get $get) => ($get('fee_type') == 1 ? '%' : 'Ft.'))
+                                                ->suffix('Ft.')
+                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
+
+                                            Textarea::make('sales_info')
+                                                ->label(function (callable $get) {
+                                                    if ($get('event_type') === '2' && $get('status') === '2') {
+                                                        return 'Ajánlat infó';
+                                                    }
+                                                    if ($get('event_type') === '2' && $get('status') === '3') {
+                                                        return 'Utánkövetési infó';
+                                                    }
+                                                })
+                                                // ->label('Értékesítési infó')
+                                                ->helperText('Írja le néhány sorban, értékesítéshez fontos információit.')
+                                                ->rows(5)
+                                                ->cols(20)
+                                                ->columnSpan(function (callable $get) {
+                                                    if ($get('event_type') === '2' && $get('status') === '2') {
+                                                        return '1';
+                                                    }
+                                                    if ($get('event_type') === '2' && $get('status') === '3') {
+                                                        return '2';
+                                                    }
+                                                })
+                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2' || $get('event_type') === '2' && $get('status') === '3'),
+                                        ]),
+
+                                    // ez jelenik meg ha az esemény típusa lezárt vesztett
+                                    Fieldset::make('Sikertelen ügylet visszamérése')
+                                        ->visible(fn(callable $get) => $get('event_type') === '5')
+                                        ->schema([
+                                            ToggleButtons::make('cause_of_loss')
+                                                ->helperText('Válassza ki az elvesztés okát.')
+                                                ->label('Státusz')
+                                                ->inline()
+                                                ->options(CauseOfLoss::class)
+                                                ->required()
+                                                ->visible(fn(callable $get) => $get('event_type') === '5'),
+                                            Textarea::make('cause_of_loss_description')
+                                                ->label('Elvesztés okának leírása')
+                                                ->helperText('Írja le néhány sorban, mi okozta, hogy meghiúsult az ügylet.')
+                                                ->rows(5)
+                                                ->cols(20)
+                                                ->columnSpan(1)
+                                                ->visible(fn(callable $get) => $get('event_type') === '5'),
+                                        ]),
+                                ]),
+                        ])
+
+                        ->action(function (array $data, $record): void {
+                            $data['customer_id'] = $record->id;
+                            $record->saleevents()->create($data);
+
+                            Notification::make()
+                                ->title('Az Új értékesítési esemény rögzítése sikerült!')
+                                ->success()
+                                ->send();
+                        }),
 
                     Action::make('Új pézügyi kockázat')
                         ->modalHeading('Új pénzügyi kocázat')
@@ -744,7 +901,7 @@ class CustomerResource extends Resource
                                 ->required()
                                 ->columnSpanFull(),
                         ])
-                        ->action(function (array $data, Customer $record): void {
+                        ->action(function (array $data, $record): void {
                             $record->financial_risk_rate = $data['financial_risk_rate'];
                             $record->justification_of_risk = $data['justification_of_risk'];
                             $record->save();
@@ -774,6 +931,7 @@ class CustomerResource extends Resource
             Pages\EditCustomer::class,
             Pages\ManageCustomerContacts::class,
             Pages\ManageCustomerAddresses::class,
+            Pages\ManageCustomerSaleevents::class,
         ]);
     }
 
@@ -793,6 +951,7 @@ class CustomerResource extends Resource
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
             'contacts' => Pages\ManageCustomerContacts::route('/{record}/contacts'),
             'addresses' => Pages\ManageCustomerAddresses::route('/{record}/addresses'),
+            'saleevents' => Pages\ManageCustomerSaleevents::route('/{record}/saleevents'),
         ];
     }
 
@@ -1176,7 +1335,7 @@ class CustomerResource extends Resource
 
                 InfolistsSection::make('Előzmények')
                     ->description('Nyomonkövethető az ügyfélhez köthető összes esemény.')
-                    ->icon('tabler-timeline-event-text')
+                    ->icon('tabler-history')
                     ->schema([
                         //..
                     ]),

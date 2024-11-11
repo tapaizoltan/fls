@@ -23,7 +23,7 @@ class ManageCustomerContacts extends ManageRelatedRecords
 
     public static function getNavigationLabel(): string
     {
-        return 'Kapcsolat';
+        return 'Kapcsolat(ok)';
     }
 
     public function getTitle(): string | Htmlable

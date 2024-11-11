@@ -23,7 +23,7 @@ class ManageCustomerAddresses extends ManageRelatedRecords
 
     public static function getNavigationLabel(): string
     {
-        return 'Cím';
+        return 'Cím(ek)';
     }
 
     public function getTitle(): string | Htmlable
