@@ -31,6 +31,8 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Livewire;
 
 use Filament\Forms\Components\Textarea;
+use Filament\Infolists\Components\Card;
+use Filament\Infolists\Components\View;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -53,6 +55,8 @@ use Filament\Infolists\Components\Group as InfolistsGroup;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use Filament\Infolists\Components\Section as InfolistsSection;
 use App\Filament\Resources\CustomerResource\Pages\ManageCustomerSaleevents;
+use Filament\Resources\Pages\ListRecords;
+use Spatie\Activitylog\Models\Activity;
 
 class CustomerResource extends Resource
 {
@@ -1338,7 +1342,10 @@ class CustomerResource extends Resource
                     ->description('Nyomonkövethető az ügyfélhez köthető összes esemény.')
                     ->icon('tabler-history')
                     ->schema([
-                        //..
+                        View::make('filament.infolists.customer-activity-log')
+                        ->viewData([
+                            'activities' => $infolist->record->activities
+                        ]),
                     ]),
             ]);
     }
