@@ -786,6 +786,7 @@ class CustomerResource extends Resource
                                                 ->rows(5)
                                                 ->cols(20)
                                                 ->columnSpan(1)
+                                                ->required()
                                                 ->visible(fn(callable $get) => $get('event_type') === '5'),
                                         ]),
                                 ]),
