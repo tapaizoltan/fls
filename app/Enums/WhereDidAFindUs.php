@@ -34,14 +34,14 @@ enum WhereDidAFindUs: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string | array | null
     {
         return match ($this) {
-            self::GoogleAds => 'info',
-            self::Facebook => 'info',
-            self::LinkedIn => 'info',
-            self::Recommendation => 'info',
-            self::Reseller => 'info',
-            self::ExhibitionOrEvent => 'info',
-            self::ColdCalling => 'info',
-            self::Other => 'info',
+            self::GoogleAds => 'gray',
+            self::Facebook => 'gray',
+            self::LinkedIn => 'gray',
+            self::Recommendation => 'gray',
+            self::Reseller => 'gray',
+            self::ExhibitionOrEvent => 'gray',
+            self::ColdCalling => 'gray',
+            self::Other => 'gray',
         };
     }
 
