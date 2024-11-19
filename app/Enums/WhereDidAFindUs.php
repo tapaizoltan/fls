@@ -6,16 +6,16 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum WhereDidAFindUs: string implements HasColor, HasIcon, HasLabel
+enum WhereDidAFindUs: int implements HasColor, HasIcon, HasLabel
 {
-    case GoogleAds = "1"; //GoogleAds
-    case Facebook = "2"; //Facebook
-    Case LinkedIn = "3"; //LinkedIn
-    case Recommendation = "4"; //Ajánlás
-    case Reseller = "5"; //Viszonteladó
-    case ExhibitionOrEvent = "6"; //Kiállítás/Rendezvény
-    case ColdCalling = "7"; //Hideghívás
-    case Other = "8"; //Egyéb 
+    case GoogleAds = 1; //GoogleAds
+    case Facebook = 2; //Facebook
+    Case LinkedIn = 3; //LinkedIn
+    case Recommendation = 4; //Ajánlás
+    case Reseller = 5; //Viszonteladó
+    case ExhibitionOrEvent = 6; //Kiállítás/Rendezvény
+    case ColdCalling = 7; //Hideghívás
+    case Other = 8; //Egyéb 
 
     public function getLabel(): string
     {

@@ -10,7 +10,7 @@ use Filament\Infolists;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use App\Enums\EventTypes;
-use App\Models\Saleevent;
+// use App\Models\Saleevent;
 use App\Enums\CauseOfLoss;
 use App\Enums\SalesStatus;
 use Filament\Tables\Table;
@@ -54,7 +54,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Infolists\Components\Group as InfolistsGroup;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use Filament\Infolists\Components\Section as InfolistsSection;
-use App\Filament\Resources\CustomerResource\Pages\ManageCustomerSaleevents;
+// use App\Filament\Resources\CustomerResource\Pages\ManageCustomerSaleevents;
 use Filament\Resources\Pages\ListRecords;
 use Spatie\Activitylog\Models\Activity;
 
@@ -77,8 +77,6 @@ class CustomerResource extends Resource
                     ->schema([
                         Section::make()
                             ->schema([
-                                Section::make()
-                                    ->schema([
                                         TextInput::make('name')
                                             ->label('Ügyfél neve')
                                             ->helperText('Adja meg az ügyfél nevét.')
@@ -107,7 +105,7 @@ class CustomerResource extends Resource
                                             ->required()
                                             ->minLength(3)
                                             ->maxLength(255),
-                                    ])->columns(2),
+                                    
 
                                 Fieldset::make('Ügyfél információk')
                                     ->schema([
@@ -579,232 +577,232 @@ class CustomerResource extends Resource
                     Action::make('Új teendő')
                         ->icon('tabler-tooltip'),
 
-                    Action::make('Új értékesítési esemény')
-                        ->modalHeading('Új értékesítési esemény')
-                        ->icon('tabler-timeline-event-plus')
-                        ->form([
-                            Select::make('user_id')
-                                ->label('Felelős személy')
-                                ->helperText('Ha nem Ön a felelős zemély akkor válassza ki a folyamatért felelős személyt.')
-                                ->options(User::all()->pluck('name', 'id'))
-                                ->default(Auth::id())
-                                ->native(false)
-                                ->searchable(),
-                            Fieldset::make('Esemény')
-                                ->schema([
-                                    ToggleButtons::make('event_type')
-                                        ->label('Esemény típus')
-                                        ->helperText('Válassza ki az esemény típusát.')
-                                        ->inline()
-                                        ->required()
-                                        // ->options([
-                                        //     '1' => 'Feltérképezés',
-                                        //     '2' => 'Árajánlat kiadás',
-                                        //     '3' => 'Értékesítés folyamatban',
-                                        //     '4' => 'Lezárt nyert',
-                                        //     '5' => 'Lezárt vesztett',
-                                        // ])
-                                        ->options(EventTypes::class)
-                                        ->reactive()
-                                        // ->afterStateUpdated(fn(callable $set) => $set('status', null))
-                                        ->afterStateUpdated(function (callable $set, callable $get) {
-                                            $eventType = $get('event_type');
+                    // Action::make('Új értékesítési esemény')
+                    //     ->modalHeading('Új értékesítési esemény')
+                    //     ->icon('tabler-timeline-event-plus')
+                    //     ->form([
+                    //         Select::make('user_id')
+                    //             ->label('Felelős személy')
+                    //             ->helperText('Ha nem Ön a felelős zemély akkor válassza ki a folyamatért felelős személyt.')
+                    //             ->options(User::all()->pluck('name', 'id'))
+                    //             ->default(Auth::id())
+                    //             ->native(false)
+                    //             ->searchable(),
+                    //         Fieldset::make('Esemény')
+                    //             ->schema([
+                    //                 ToggleButtons::make('event_type')
+                    //                     ->label('Esemény típus')
+                    //                     ->helperText('Válassza ki az esemény típusát.')
+                    //                     ->inline()
+                    //                     ->required()
+                    //                     ->options([
+                    //                         '1' => 'Feltérképezés',
+                    //                         '2' => 'Árajánlat kiadás',
+                    //                         '3' => 'Értékesítés folyamatban',
+                    //                         '4' => 'Lezárt nyert',
+                    //                         '5' => 'Lezárt vesztett',
+                    //                     ])
+                                        
+                    //                     ->reactive()
+                    //                     // ->afterStateUpdated(fn(callable $set) => $set('status', null))
+                    //                     ->afterStateUpdated(function (callable $set, callable $get) {
+                    //                         $eventType = $get('event_type');
 
-                                            // Kiválasztható státuszok beállítása az event_type szerint
-                                            $statusOptions = match ($eventType) {
-                                                '1' => ['1' => 'Igényfelmérés'],
-                                                '2' => [
-                                                    '2' => 'Árajánlat adás',
-                                                    '3' => 'Árajánlat utánkövetés',
-                                                ],
-                                                '3' => ['4' => 'Szerződéskötés, számlázás'],
-                                                '4' => ['5' => 'Sikeres lezárt'],
-                                                '5' => ['6' => 'Sikertelen lezárt'],
-                                                default => [],
-                                            };
+                    //                         // Kiválasztható státuszok beállítása az event_type szerint
+                    //                         $statusOptions = match ($eventType) {
+                    //                             '1' => ['1' => 'Igényfelmérés'],
+                    //                             '2' => [
+                    //                                 '2' => 'Árajánlat adás',
+                    //                                 '3' => 'Árajánlat utánkövetés',
+                    //                             ],
+                    //                             '3' => ['4' => 'Szerződéskötés, számlázás'],
+                    //                             '4' => ['5' => 'Sikeres lezárt'],
+                    //                             '5' => ['6' => 'Sikertelen lezárt'],
+                    //                             default => [],
+                    //                         };
 
-                                            // Alapértelmezett státusz beállítása, ha csak egy opció elérhető
-                                            if (count($statusOptions) === 1) {
-                                                $set('status', array_key_first($statusOptions));
-                                            } else {
-                                                $set('status', null);
-                                            }
-                                        })
-                                        ->columnSpanFull(),
-                                    ToggleButtons::make('status')
-                                        ->label('Státusz')
-                                        // ->helperText('Válassza ki az esemény státuszát.')
-                                        ->helperText(function (callable $get) {
-                                            if ($get('event_type') === '2') {
-                                                return 'Válassza ki az esemény státuszát.';
-                                            }
-                                            else {return;}
-                                        })
-                                        ->inline()
-                                        ->required()
-                                        ->options(function (callable $get) {
-                                            $eventType = $get('event_type');
-                                            return match ($eventType) {
-                                                '1' => ['1' => 'Igényfelmérés'],
-                                                '2' => [
-                                                    '2' => 'Árajánlat adás',
-                                                    '3' => 'Árajánlat utánkövetés',
-                                                ],
-                                                '3' => ['4' => 'Szerződéskötés, számlázás'],
-                                                '4' => ['5' => 'Sikeres lezárt'],
-                                                '5' => ['6' => 'Sikertelen lezárt'],
-                                                default => [],
-                                            };
-                                        })
-                                        ->colors(function (callable $get) {
-                                            $eventType = $get('event_type');
-                                            return match ($eventType) {
-                                                '1' => ['1' => 'info'],
-                                                '2' => [
-                                                    '2' => 'warning',
-                                                    '3' => 'warning',
-                                                ],
-                                                '3' => ['4' => 'warning'],
-                                                '4' => ['5' => 'success'],
-                                                '5' => ['6' => 'danger'],
-                                                default => [],
-                                            };
-                                        })
-                                        ->icons(function (callable $get) {
-                                            $eventType = $get('event_type');
-                                            return match ($eventType) {
-                                                '1' => ['1' => 'tabler-message-question'],
-                                                '2' => [
-                                                    '2' => 'tabler-keyboard',
-                                                    '3' => 'tabler-s-turn-down',
-                                                ],
-                                                '3' => ['4' => 'tabler-writing-sign'],
-                                                '4' => ['5' => 'tabler-thumb-up'],
-                                                '5' => ['6' => 'tabler-thumb-down'],
-                                                default => [],
-                                            };
-                                        })
-                                        ->reactive()
-                                        ->columnSpanFull(),
+                    //                         // Alapértelmezett státusz beállítása, ha csak egy opció elérhető
+                    //                         if (count($statusOptions) === 1) {
+                    //                             $set('status', array_key_first($statusOptions));
+                    //                         } else {
+                    //                             $set('status', null);
+                    //                         }
+                    //                     })
+                    //                     ->columnSpanFull(),
+                    //                 ToggleButtons::make('status')
+                    //                     ->label('Státusz')
+                    //                     // ->helperText('Válassza ki az esemény státuszát.')
+                    //                     ->helperText(function (callable $get) {
+                    //                         if ($get('event_type') === '2') {
+                    //                             return 'Válassza ki az esemény státuszát.';
+                    //                         }
+                    //                         else {return;}
+                    //                     })
+                    //                     ->inline()
+                    //                     ->required()
+                    //                     ->options(function (callable $get) {
+                    //                         $eventType = $get('event_type');
+                    //                         return match ($eventType) {
+                    //                             '1' => ['1' => 'Igényfelmérés'],
+                    //                             '2' => [
+                    //                                 '2' => 'Árajánlat adás',
+                    //                                 '3' => 'Árajánlat utánkövetés',
+                    //                             ],
+                    //                             '3' => ['4' => 'Szerződéskötés, számlázás'],
+                    //                             '4' => ['5' => 'Sikeres lezárt'],
+                    //                             '5' => ['6' => 'Sikertelen lezárt'],
+                    //                             default => [],
+                    //                         };
+                    //                     })
+                    //                     ->colors(function (callable $get) {
+                    //                         $eventType = $get('event_type');
+                    //                         return match ($eventType) {
+                    //                             '1' => ['1' => 'info'],
+                    //                             '2' => [
+                    //                                 '2' => 'warning',
+                    //                                 '3' => 'warning',
+                    //                             ],
+                    //                             '3' => ['4' => 'warning'],
+                    //                             '4' => ['5' => 'success'],
+                    //                             '5' => ['6' => 'danger'],
+                    //                             default => [],
+                    //                         };
+                    //                     })
+                    //                     ->icons(function (callable $get) {
+                    //                         $eventType = $get('event_type');
+                    //                         return match ($eventType) {
+                    //                             '1' => ['1' => 'tabler-message-question'],
+                    //                             '2' => [
+                    //                                 '2' => 'tabler-keyboard',
+                    //                                 '3' => 'tabler-s-turn-down',
+                    //                             ],
+                    //                             '3' => ['4' => 'tabler-writing-sign'],
+                    //                             '4' => ['5' => 'tabler-thumb-up'],
+                    //                             '5' => ['6' => 'tabler-thumb-down'],
+                    //                             default => [],
+                    //                         };
+                    //                     })
+                    //                     ->reactive()
+                    //                     ->columnSpanFull(),
 
-                                    // ez jelenik meg ha az esemény típusa feltérképezés
-                                    Select::make('where_did_a_find_us')
-                                        ->label('Hol talált ránk?')
-                                        ->helperText('Válassza ki a megkeresés formályát.')
-                                        ->options(WhereDidAFindUs::class)
-                                        ->native(false)
-                                        ->prefixIcon('tabler-ear-scan')
-                                        ->searchable()
-                                        ->required()
-                                        ->columnSpan(1)
-                                        ->visible(fn(callable $get) => $get('event_type') === '1'),
-                                    Textarea::make('what_are_you_interested_in')
-                                        ->label('Mi iránt érdeklődik?')
-                                        ->helperText('Írja le néhány sorban, hogy mi iránt érdeklődött az ügyfél.')
-                                        ->rows(5)
-                                        ->cols(20)
-                                        ->required()
-                                        ->columnSpan(2)
-                                        ->visible(fn(callable $get) => $get('event_type') === '1'),
+                    //                 // ez jelenik meg ha az esemény típusa feltérképezés
+                    //                 Select::make('where_did_a_find_us')
+                    //                     ->label('Hol talált ránk?')
+                    //                     ->helperText('Válassza ki a megkeresés formályát.')
+                    //                     ->options(WhereDidAFindUs::class)
+                    //                     ->native(false)
+                    //                     ->prefixIcon('tabler-ear-scan')
+                    //                     ->searchable()
+                    //                     ->required()
+                    //                     ->columnSpan(1)
+                    //                     ->visible(fn(callable $get) => $get('event_type') === '1'),
+                    //                 Textarea::make('what_are_you_interested_in')
+                    //                     ->label('Mi iránt érdeklődik?')
+                    //                     ->helperText('Írja le néhány sorban, hogy mi iránt érdeklődött az ügyfél.')
+                    //                     ->rows(5)
+                    //                     ->cols(20)
+                    //                     ->required()
+                    //                     ->columnSpan(2)
+                    //                     ->visible(fn(callable $get) => $get('event_type') === '1'),
 
-                                    // ez jelenik meg ha az esemény típusa árajánla kiadása és a status árajánlat adása
-                                    Fieldset::make('Értékesítési infók')
-                                        ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2' || $get('event_type') === '2' && $get('status') === '3')
-                                        ->schema([
-                                            DatePicker::make('date_of_offer')
-                                                //->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
-                                                ->helperText('Adja meg azt a dátumot amikor kiadta az árajánlatot')
-                                                ->label('Ajánlatadás dátuma')
-                                                ->prefixIcon('tabler-calendar')
-                                                ->weekStartsOnMonday()
-                                                ->placeholder(now())
-                                                ->displayFormat('Y-m-d')
-                                                ->required()
-                                                ->native(false)
-                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
+                    //                 // ez jelenik meg ha az esemény típusa árajánla kiadása és a status árajánlat adása
+                    //                 Fieldset::make('Értékesítési infók')
+                    //                     ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2' || $get('event_type') === '2' && $get('status') === '3')
+                    //                     ->schema([
+                    //                         DatePicker::make('date_of_offer')
+                    //                             //->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
+                    //                             ->helperText('Adja meg azt a dátumot amikor kiadta az árajánlatot')
+                    //                             ->label('Ajánlatadás dátuma')
+                    //                             ->prefixIcon('tabler-calendar')
+                    //                             ->weekStartsOnMonday()
+                    //                             ->placeholder(now())
+                    //                             ->displayFormat('Y-m-d')
+                    //                             ->required()
+                    //                             ->native(false)
+                    //                             ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
 
-                                            DatePicker::make('expected_closing_date')
-                                                //->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
-                                                ->helperText('Adja meg azt a dátumot amikor várhatóan lezárásra kerül ez az esemény vagy ügylet.')
-                                                ->label('Várható lezárás dátuma')
-                                                ->prefixIcon('tabler-calendar')
-                                                ->weekStartsOnMonday()
-                                                ->placeholder(now())
-                                                ->displayFormat('Y-m-d')
-                                                ->required()
-                                                ->native(false)
-                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
+                    //                         DatePicker::make('expected_closing_date')
+                    //                             //->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
+                    //                             ->helperText('Adja meg azt a dátumot amikor várhatóan lezárásra kerül ez az esemény vagy ügylet.')
+                    //                             ->label('Várható lezárás dátuma')
+                    //                             ->prefixIcon('tabler-calendar')
+                    //                             ->weekStartsOnMonday()
+                    //                             ->placeholder(now())
+                    //                             ->displayFormat('Y-m-d')
+                    //                             ->required()
+                    //                             ->native(false)
+                    //                             ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
 
-                                            TextInput::make('expected_sales_revenue')
-                                                ->label('Várható árbevétel')
-                                                ->helperText('Adja meg a prognosztizált árbevétel számszerű értékét.')
-                                                ->prefixIcon('tabler-abacus')
-                                                ->numeric()
-                                                ->default(0)
-                                                ->required()
-                                                ->minLength(1)
-                                                ->maxLength(10)
-                                                // ->disabled(!auth()->user()->hasRole(['super_admin']))
-                                                //->suffix(fn(Get $get) => ($get('fee_type') == 1 ? '%' : 'Ft.'))
-                                                ->suffix('Ft.')
-                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
+                    //                         TextInput::make('expected_sales_revenue')
+                    //                             ->label('Várható árbevétel')
+                    //                             ->helperText('Adja meg a prognosztizált árbevétel számszerű értékét.')
+                    //                             ->prefixIcon('tabler-abacus')
+                    //                             ->numeric()
+                    //                             ->default(0)
+                    //                             ->required()
+                    //                             ->minLength(1)
+                    //                             ->maxLength(10)
+                    //                             // ->disabled(!auth()->user()->hasRole(['super_admin']))
+                    //                             //->suffix(fn(Get $get) => ($get('fee_type') == 1 ? '%' : 'Ft.'))
+                    //                             ->suffix('Ft.')
+                    //                             ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2'),
 
-                                            Textarea::make('sales_info')
-                                                ->label(function (callable $get) {
-                                                    if ($get('event_type') === '2' && $get('status') === '2') {
-                                                        return 'Ajánlat infó';
-                                                    }
-                                                    if ($get('event_type') === '2' && $get('status') === '3') {
-                                                        return 'Utánkövetési infó';
-                                                    }
-                                                })
-                                                // ->label('Értékesítési infó')
-                                                ->helperText('Írja le néhány sorban, értékesítéshez fontos információit.')
-                                                ->rows(5)
-                                                ->cols(20)
-                                                ->columnSpan(function (callable $get) {
-                                                    if ($get('event_type') === '2' && $get('status') === '2') {
-                                                        return '1';
-                                                    }
-                                                    if ($get('event_type') === '2' && $get('status') === '3') {
-                                                        return '2';
-                                                    }
-                                                })
-                                                ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2' || $get('event_type') === '2' && $get('status') === '3'),
-                                        ]),
+                    //                         Textarea::make('sales_info')
+                    //                             ->label(function (callable $get) {
+                    //                                 if ($get('event_type') === '2' && $get('status') === '2') {
+                    //                                     return 'Ajánlat infó';
+                    //                                 }
+                    //                                 if ($get('event_type') === '2' && $get('status') === '3') {
+                    //                                     return 'Utánkövetési infó';
+                    //                                 }
+                    //                             })
+                    //                             // ->label('Értékesítési infó')
+                    //                             ->helperText('Írja le néhány sorban, értékesítéshez fontos információit.')
+                    //                             ->rows(5)
+                    //                             ->cols(20)
+                    //                             ->columnSpan(function (callable $get) {
+                    //                                 if ($get('event_type') === '2' && $get('status') === '2') {
+                    //                                     return '1';
+                    //                                 }
+                    //                                 if ($get('event_type') === '2' && $get('status') === '3') {
+                    //                                     return '2';
+                    //                                 }
+                    //                             })
+                    //                             ->visible(fn(callable $get) => $get('event_type') === '2' && $get('status') === '2' || $get('event_type') === '2' && $get('status') === '3'),
+                    //                     ]),
 
-                                    // ez jelenik meg ha az esemény típusa lezárt vesztett
-                                    Fieldset::make('Sikertelen ügylet visszamérése')
-                                        ->visible(fn(callable $get) => $get('event_type') === '5')
-                                        ->schema([
-                                            ToggleButtons::make('cause_of_loss')
-                                                ->helperText('Válassza ki az elvesztés okát.')
-                                                ->label('Státusz')
-                                                ->inline()
-                                                ->options(CauseOfLoss::class)
-                                                ->required()
-                                                ->visible(fn(callable $get) => $get('event_type') === '5'),
-                                            Textarea::make('cause_of_loss_description')
-                                                ->label('Elvesztés okának leírása')
-                                                ->helperText('Írja le néhány sorban, mi okozta, hogy meghiúsult az ügylet.')
-                                                ->rows(5)
-                                                ->cols(20)
-                                                ->columnSpan(1)
-                                                ->required()
-                                                ->visible(fn(callable $get) => $get('event_type') === '5'),
-                                        ]),
-                                ]),
-                        ])
+                    //                 // ez jelenik meg ha az esemény típusa lezárt vesztett
+                    //                 Fieldset::make('Sikertelen ügylet visszamérése')
+                    //                     ->visible(fn(callable $get) => $get('event_type') === '5')
+                    //                     ->schema([
+                    //                         ToggleButtons::make('cause_of_loss')
+                    //                             ->helperText('Válassza ki az elvesztés okát.')
+                    //                             ->label('Státusz')
+                    //                             ->inline()
+                    //                             ->options(CauseOfLoss::class)
+                    //                             ->required()
+                    //                             ->visible(fn(callable $get) => $get('event_type') === '5'),
+                    //                         Textarea::make('cause_of_loss_description')
+                    //                             ->label('Elvesztés okának leírása')
+                    //                             ->helperText('Írja le néhány sorban, mi okozta, hogy meghiúsult az ügylet.')
+                    //                             ->rows(5)
+                    //                             ->cols(20)
+                    //                             ->columnSpan(1)
+                    //                             ->required()
+                    //                             ->visible(fn(callable $get) => $get('event_type') === '5'),
+                    //                     ]),
+                    //             ]),
+                    //     ])
 
-                        ->action(function (array $data, $record): void {
-                            $data['customer_id'] = $record->id;
-                            $record->saleevents()->create($data);
+                    //     ->action(function (array $data, $record): void {
+                    //         $data['customer_id'] = $record->id;
+                    //         $record->saleevents()->create($data);
 
-                            Notification::make()
-                                ->title('Az Új értékesítési esemény rögzítése sikerült!')
-                                ->success()
-                                ->send();
-                        }),
+                    //         Notification::make()
+                    //             ->title('Az Új értékesítési esemény rögzítése sikerült!')
+                    //             ->success()
+                    //             ->send();
+                    //     }),
 
                     Action::make('Új pézügyi kockázat')
                         ->modalHeading('Új pénzügyi kocázat')
@@ -936,7 +934,7 @@ class CustomerResource extends Resource
             Pages\EditCustomer::class,
             Pages\ManageCustomerContacts::class,
             Pages\ManageCustomerAddresses::class,
-            Pages\ManageCustomerSaleevents::class,
+            // Pages\ManageCustomerSaleevents::class,
         ]);
     }
 
@@ -956,7 +954,7 @@ class CustomerResource extends Resource
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
             'contacts' => Pages\ManageCustomerContacts::route('/{record}/contacts'),
             'addresses' => Pages\ManageCustomerAddresses::route('/{record}/addresses'),
-            'saleevents' => Pages\ManageCustomerSaleevents::route('/{record}/saleevents'),
+            // 'saleevents' => Pages\ManageCustomerSaleevents::route('/{record}/saleevents'),
         ];
     }
 

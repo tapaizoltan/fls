@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\EventTypes;
 use App\Enums\CauseOfLoss;
 use App\Enums\SalesStatus;
 use Illuminate\Support\Str;
@@ -16,7 +15,6 @@ class Sale extends Model
     use SoftDeletes;
 
     protected $casts = [
-        'event_type' => EventTypes::class,
         'status' => SalesStatus::class,
         'where_did_a_find_us' => WhereDidAFindUs::class,
         'cause_of_loss' => CauseOfLoss::class,

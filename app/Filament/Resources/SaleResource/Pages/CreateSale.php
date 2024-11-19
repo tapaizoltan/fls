@@ -14,5 +14,6 @@ class CreateSale extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
 }
 

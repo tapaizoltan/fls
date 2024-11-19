@@ -15,24 +15,24 @@ class SaleClosed extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Sikeres értékesítés',Saleevent::count())
-            ->value(function(){
-                $userId = Auth::id();
-                $saleeventCount = Saleevent::where('user_id', $userId)->where('status', 5)->count();
-                return $saleeventCount.' db';
-            })
-            ->icon('tabler-thumb-up')
-            ->description('Sikeresen lezárt értékesítési folyamat.')
-            ->descriptionColor('success'),
-            Stat::make('Vesztett értékesítés',Saleevent::count())
-            ->value(function(){
-                $userId = Auth::id();
-                $saleeventCount = Saleevent::where('user_id', $userId)->where('status', 6)->count();
-                return $saleeventCount.' db';
-            })
-            ->icon('tabler-thumb-down')
-            ->description('Sikertelenül lezárt értékesítési folyamat.')
-            ->descriptionColor('danger')
+            // Stat::make('Sikeres értékesítés',Saleevent::count())
+            // ->value(function(){
+            //     $userId = Auth::id();
+            //     $saleeventCount = Saleevent::where('user_id', $userId)->where('status', 5)->count();
+            //     return $saleeventCount.' db';
+            // })
+            // ->icon('tabler-thumb-up')
+            // ->description('Sikeresen lezárt értékesítési folyamat.')
+            // ->descriptionColor('success'),
+            // Stat::make('Vesztett értékesítés',Saleevent::count())
+            // ->value(function(){
+            //     $userId = Auth::id();
+            //     $saleeventCount = Saleevent::where('user_id', $userId)->where('status', 6)->count();
+            //     return $saleeventCount.' db';
+            // })
+            // ->icon('tabler-thumb-down')
+            // ->description('Sikertelenül lezárt értékesítési folyamat.')
+            // ->descriptionColor('danger')
         ];
     }
 }
