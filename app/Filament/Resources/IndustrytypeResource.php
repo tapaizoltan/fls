@@ -39,23 +39,39 @@ class IndustrytypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('Iparágak')
+            ->heading('Iparágak, tevékenységi besorolások')
+            ->description('Ebben a modulban rögzíthet iparágakat, amiket később hozzá tud társítani az ügyfeleihez.')
+            ->emptyStateHeading('Nincs megjeleníthető iparág.')
+            ->emptyStateDescription('Új iparág rögzítése az "Új ügyfél" létrehozásakor, az iparágak lenyíló menüjében, a "+" gombra kattintva rögzíthet, amit később bármelyik másik ügyfélnél is tud majd használni..')
+            ->emptyStateIcon('tabler-database-search')
             ->columns([
                 TextColumn::make('name')
-                ->label('Megnevezés')
-                ->searchable()
+                    ->label('Iparág neve')
+                    ->searchable()
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
             ])
             ->actions([
-                //Tables\Actions\EditAction::make(),
-                DeleteAction::make()->icon('tabler-trash')->label(false),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil'),
+                //Tables\Actions\DissociateAction::make(),
+                Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
+                Tables\Actions\ForceDeleteAction::make()->label(false),
+                Tables\Actions\RestoreAction::make()->label(false),
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    // Tables\Actions\DissociateBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn(Builder $query) => $query->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]));
     }
 
     public static function getRelations(): array
@@ -69,7 +85,7 @@ class IndustrytypeResource extends Resource
     {
         return [
             'index' => Pages\ListIndustrytypes::route('/'),
-            'create' => Pages\CreateIndustrytype::route('/create'),
+            // 'create' => Pages\CreateIndustrytype::route('/create'),
             'edit' => Pages\EditIndustrytype::route('/{record}/edit'),
         ];
     }

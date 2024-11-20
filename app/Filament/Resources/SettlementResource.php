@@ -26,7 +26,7 @@ class SettlementResource extends Resource
     protected static ?string $navigationIcon = 'tabler-map-question';
     protected static ?string $modelLabel = 'település';
     protected static ?string $pluralModelLabel = 'települések';
-    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -38,27 +38,46 @@ class SettlementResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('Települések')
+            ->heading('Települések és postai irányítószámok')
+            ->description('Ebben a modulban rögzíthet Településeket a hozzá tartozó postai irányítószámmal.')
+            ->emptyStateHeading('Nincs megjeleníthető település.')
+            ->emptyStateDescription('Az "Új település" gombra kattintva rögzíthet település és posti irányítószámot.')
+            ->emptyStateIcon('tabler-database-search')
             ->columns([
                 TextColumn::make('zip_code')
-                ->label('Postai irányítószám')
-                ->searchable(),
+                    ->label('Postai irányítószám')
+                    ->searchable(),
                 TextColumn::make('settlement')
-                ->label('Település neve')
-                ->searchable(),
+                    ->label('Település neve')
+                    ->searchable(),
             ])
             ->openRecordUrlInNewTab()
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()->label('Új település')->icon('tabler-circle-plus')->modalHeading('Új település')->createAnother(false),
             ])
             ->actions([
-                //Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()->label(false),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil'),
+                //Tables\Actions\DissociateAction::make(),
+                Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
+                Tables\Actions\ForceDeleteAction::make()->label(false),
+                Tables\Actions\RestoreAction::make()->label(false),
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    // Tables\Actions\DissociateBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn(Builder $query) => $query->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]));
     }
 
     public static function getRelations(): array

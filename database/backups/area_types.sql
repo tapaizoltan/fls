@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 -- Tábla szerkezet ehhez a táblához `areatypes`
 --
 
-CREATE TABLE `areatypes` (
+CREATE TABLE `area_types` (
   `id` int(10) NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
@@ -36,7 +36,7 @@ CREATE TABLE `areatypes` (
 -- A tábla adatainak kiíratása `area_types`
 --
 
-INSERT INTO `areatypes` (`id`, `name`) VALUES
+INSERT INTO `area_types` (`id`, `name`) VALUES
 (1, 'akna'),
 (2, 'akna-alsó'),
 (3, 'akna-felső'),
@@ -225,7 +225,7 @@ INSERT INTO `areatypes` (`id`, `name`) VALUES
 --
 -- A tábla indexei `areatypes`
 --
-ALTER TABLE `areatypes`
+ALTER TABLE `area_types`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -235,7 +235,7 @@ ALTER TABLE `areatypes`
 --
 -- AUTO_INCREMENT a táblához `area_types`
 --
-ALTER TABLE `areatypes`
+ALTER TABLE `area_types`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 COMMIT;
 
