@@ -10,6 +10,7 @@ use App\Models\Industrytype;
 use Filament\Resources\Resource;
 use App\Filament\Clusters\Settings;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,7 +33,12 @@ class IndustrytypeResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->label('Iparág neve')
+                    ->helperText('Módosítsa az iparág nevét.')
+                    ->required()
+                    ->prefixIcon('tabler-writing')
+                    ->columns(2),
             ]);
     }
 
@@ -54,7 +60,7 @@ class IndustrytypeResource extends Resource
                 Tables\Filters\TrashedFilter::make()
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil'),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Iparág szerkesztése'),
                 //Tables\Actions\DissociateAction::make(),
                 Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false),
@@ -86,7 +92,7 @@ class IndustrytypeResource extends Resource
         return [
             'index' => Pages\ListIndustrytypes::route('/'),
             // 'create' => Pages\CreateIndustrytype::route('/create'),
-            'edit' => Pages\EditIndustrytype::route('/{record}/edit'),
+            // 'edit' => Pages\EditIndustrytype::route('/{record}/edit'),
         ];
     }
 }

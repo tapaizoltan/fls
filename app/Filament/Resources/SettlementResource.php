@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SettlementResource\Pages;
 use App\Filament\Resources\SettlementResource\RelationManagers;
+use Filament\Forms\Components\TextInput;
 
 class SettlementResource extends Resource
 {
@@ -31,7 +32,19 @@ class SettlementResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('zip_code')
+                    ->label('Postai irányítószám')
+                    ->helperText('Adja meg a rögzíteni kívánt új település postai irányítószámát.')
+                    ->numeric()
+                    ->required()
+                    ->prefixIcon('tabler-numbers')
+                    ->columns(2),
+                TextInput::make('settlement')
+                    ->label('Település név')
+                    ->helperText('Adja meg a rögzíteni kívánt új település nevét.')
+                    ->required()
+                    ->prefixIcon('tabler-writing')
+                    ->columns(2),
             ]);
     }
 
@@ -60,7 +73,7 @@ class SettlementResource extends Resource
                 Tables\Actions\CreateAction::make()->label('Új település')->icon('tabler-circle-plus')->modalHeading('Új település')->createAnother(false),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil'),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Település szerkesztése'),
                 //Tables\Actions\DissociateAction::make(),
                 Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false),
@@ -91,8 +104,8 @@ class SettlementResource extends Resource
     {
         return [
             'index' => Pages\ListSettlements::route('/'),
-            'create' => Pages\CreateSettlement::route('/create'),
-            'edit' => Pages\EditSettlement::route('/{record}/edit'),
+            // 'create' => Pages\CreateSettlement::route('/create'),
+            // 'edit' => Pages\EditSettlement::route('/{record}/edit'),
         ];
     }
 }

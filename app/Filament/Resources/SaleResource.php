@@ -64,7 +64,7 @@ class SaleResource extends Resource
                     ->schema([
                         Select::make('user_id')
                             ->label('Felelős személy')
-                            ->helperText('Ha nem Ön a felelős zemély akkor válassza ki a folyamatért felelős személyt.')
+                            ->helperText('Ha nem Ön a felelős személy akkor válassza ki a folyamatért felelős személyt.')
                             ->options(User::all()->pluck('name', 'id'))
                             ->default(FormAuth::id())
                             ->native(false)
@@ -72,7 +72,7 @@ class SaleResource extends Resource
                             ->columnSpan(2),
                         Select::make('customer_id')
                             ->label('Ügyfél')
-                            ->helperText('Válassza ki azt az ügyfelet, emlyikhez rögzíteni kívánja az új eseményt.')
+                            ->helperText('Válassza ki azt az ügyfelet, amelyikhez rögzíteni kívánja az új eseményt.')
                             ->options(Customer::all()->pluck('name', 'id'))
                             ->native(false)
                             ->searchable()
@@ -151,7 +151,7 @@ class SaleResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
             ])
             ->actions([
                 ActionGroup::make([
@@ -405,14 +405,24 @@ class SaleResource extends Resource
                         }),
                     EditAction::make()->icon('tabler-pencil'),
                     DeleteAction::make()->icon('tabler-trash'),
+                    // Tables\Actions\DissociateAction::make(),
+
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                 ]),
 
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DissociateBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn(Builder $query) => $query->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]));
     }
 
     public static function getRecordSubNavigation(Page $page): array
