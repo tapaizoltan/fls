@@ -203,8 +203,7 @@ class ManageCustomerAddresses extends ManageRelatedRecords
                             ->helperText('Adja meg az épület számát és az esetleges kiegészító adatokat (pl.: emelet, ajtó, stb...).')
                             ->label('Épület, emelet, ajtó')
                             ->prefixIcon('tabler-writing-sign')
-                            ->minLength(1)
-                            ->maxLength(10),
+                            ->maxLength(100),
 
                         TextInput::make('po_box')
                             ->helperText('Amennyiben rendelkezik postafiókkal, annak számát is megadhatja.')
