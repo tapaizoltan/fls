@@ -101,7 +101,7 @@ class ManageCustomerAddresses extends ManageRelatedRecords
                     //->disabled(fn (Get $get): bool => ($get('country_type')!='0'))
                     ->default('HUN'),
 
-                Select::make('settlement')
+                Select::make('zip_code')
                     //->hidden(fn (Get $get): bool => ($get('country_type')!='0'))
                     //->required(fn (Get $get): bool => ($get('country_type')!='1'))
                     ->required()
@@ -109,28 +109,24 @@ class ManageCustomerAddresses extends ManageRelatedRecords
                     ->label('Település')
                     ->prefixIcon('tabler-writing-sign')
                     ->preload()
-                    ->options(Settlement::selectraw('settlement, concat ( zip_code , " - " , settlement ) as codeWithSettlement')->pluck('codeWithSettlement', 'settlement'))
-                    //->options(ZipCode::selectraw('settlement, concat ( "(" , zip_code , ") " , settlement ) as codeWithSettlement')->pluck('codeWithSettlement', 'settlement'))
-                    //->options(ZipCode::all()->pluck('settlement', 'settlement'))
-                    //->relationship(name: 'zipcode', titleAttribute: 'settlement')
+                    ->options(Settlement::selectraw('zip_code, concat ( zip_code , " - " , settlement ) as codeWithSettlement')->pluck('codeWithSettlement', 'zip_code'))
                     ->searchable()
                     ->native(false)
                     ->createOptionForm([
                         TextInput::make('zip_code')->label('Postai irányítószám')->helperText('Adja meg a rögzíteni kívánt új település, postai irányítószámát.')
                             ->required()->unique(),
                         TextInput::make('settlement')->label('Település neve')->helperText('Adja meg a rögzíteni kívánt új település nevét.')
-                            ->required()->unique(),
+                            ->required(),
                     ])
+                    ->createOptionUsing(function (array $data) {
+                        return Settlement::create($data)->zip_code;
+                    })
                     ->afterStateUpdated(function (Set $set, $state) {
-                        $set('zip_code', Settlement::where('settlement', $state)->first()->zip_code);
+                        $set('settlement', Settlement::where('zip_code', $state)->first()->settlement);
                     })
                     ->live(),
 
-                Hidden::make('zip_code')
-                    //->disabled(fn (Get $get): bool => ($get('country_type')!='0'))
-                    ->default(function (Get $get) {
-                        return $get('settlement');
-                    }),
+                Hidden::make('settlement'),
 
                 /*
                 TextInput::make('zip_code')

@@ -15,13 +15,12 @@ class Address extends Model
     {
         return $this->belongsTo(Customer::class);
     }
-
     public function addresstype()
     {
         return $this->belongsTo(Addresstype::class);
     }
-    public function settlement()
-    {
-        return $this->belongsTo(Settlement::class);
-    }
+    // public function settlement()
+    // {
+    //     return $this->belongsTo(Settlement::class);
+    // }
 }
