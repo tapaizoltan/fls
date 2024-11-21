@@ -19,7 +19,6 @@ class Customer extends Model
     {
         return LogOptions::defaults()
         ->logOnly(['financial_risk_rate', 'justification_of_risk']);
-        // Chain fluent methods for configuration options
     }
     
     public function industrytypes(): BelongsToMany
@@ -37,18 +36,8 @@ class Customer extends Model
         return $this->hasMany(Address::class);
     }
 
-    public function financialrisks()
-    {
-        return $this->hasMany(Financialrisk::class);
-    }
-
     public function sales()
     {
         return $this->hasMany(Sale::class);
-    }
-
-    public function saleevents()
-    {
-        return $this->hasMany(Saleevent::class);
     }
 }

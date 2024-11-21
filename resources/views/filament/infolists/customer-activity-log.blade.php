@@ -44,9 +44,19 @@
                     {{-- @foreach ($activity->changes['old'] as $key => $value)
                         A pézügyi kockázati szint: {{ $value }} -ról {{ $activity->changes['attributes'][$key] }} -re lett módosítva.
                     @endforeach --}}
+                    @if (!empty($activity->changes['old']['financial_risk_rate']))
                     A pézügyi kockázati szint: {{ $activity->changes['old']['financial_risk_rate'] }} -ról {{ $activity->changes['attributes']['financial_risk_rate'] }} -re lett módosítva.
+                    @else
+                    A pézügyi kockázati szint: {{ $activity->changes['attributes']['financial_risk_rate'] }} -val létre lett hozva.
+                    @endif
                 </p>
-                <p style="color:gray; font-size: 8pt; margin-bottom: -2px;">Az indoklása: {{ $activity->changes['attributes']['justification_of_risk'] }}</p>
+                <p style="color:gray; font-size: 8pt; margin-bottom: -2px;">
+                  @if(!empty($activity->changes['attributes']['justification_of_risk']))
+                    Az indoklása: {{ $activity->changes['attributes']['justification_of_risk'] }}
+                  @else
+                    Az indoklása: Létrehozáskor ez az alapértelmezett érték.
+                  @endif
+                </p>
             </div>
         </li>
 
