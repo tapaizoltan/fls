@@ -71,6 +71,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->navigationGroups([NavigationGroup::make()->label('Értékesítés')->icon('tabler-discount-check')])
+            ->navigationGroups([NavigationGroup::make()->label('Termékek')->icon('tabler-loader-3')])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->maxContentWidth(\Filament\Support\Enums\MaxWidth::Full);
     }

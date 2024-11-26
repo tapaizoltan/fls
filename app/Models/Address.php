@@ -19,8 +19,4 @@ class Address extends Model
     {
         return $this->belongsTo(Addresstype::class);
     }
-    // public function settlement()
-    // {
-    //     return $this->belongsTo(Settlement::class);
-    // }
 }

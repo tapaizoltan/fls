@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->integer('productmaincategory_id')->comment('főkategória');
-            $table->integer('productsubcategory_id')->comment('alkategória');
-            $table->string('name');
+            $table->integer('productsubcategory_id')->nullable()->comment('alkategória');
+            $table->string('name')->nullable();
             $table->longText('description')->nullable()->comment('leírás');
             $table->string('image_path')->nullable()->comment('kép a termékről');
             // szín, méret
