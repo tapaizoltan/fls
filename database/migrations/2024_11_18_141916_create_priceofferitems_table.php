@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('quantity')->comment('mennyiség');
             $table->integer('discount')->comment('kedvezmény mértéke');
             $table->integer('net_total_price')->comment('nettó össz. ár (kedvezménnyel együtt)');
-            
             $table->timestamps();
         });
     }

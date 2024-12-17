@@ -11,6 +11,7 @@ use App\Models\Productsubcategory;
 use Illuminate\Support\HtmlString;
 use App\Filament\Clusters\Settings;
 use App\Models\Productmaincategory;
+use Filament\Forms\Components\Grid;
 use Filament\Tables\Grouping\Group;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
@@ -37,23 +38,26 @@ class ProductsubcategoryResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('productmaincategory_id')
-                    ->label('Főkategória')
-                    ->helperText('Válassza ki, melyik főkategóriához kíván alkategóriát létrehozni.')
-                    //->options(Brand::all()->pluck('name', 'id'))
-                    ->prefixIcon('tabler-layout-list')
-                    ->preload()
-                    ->relationship(name: 'productmaincategory', titleAttribute: 'name')
-                    ->native(false)
-                    ->searchable()
-                    ->required()
-                    ->columnSpanFull(),
-                TextInput::make('name')
-                    ->label('Alkategória neve')
-                    ->required()
-                    ->helperText('Adja mega az új termék alkategória elnevezését.')
-                    ->maxLength(255)
-                    ->columnSpanFull(),
+                Grid::make(2)
+                    ->schema([
+                        Select::make('productmaincategory_id')
+                            ->label('Főkategória')
+                            ->helperText('Válassza ki, melyik főkategóriához kíván alkategóriát létrehozni.')
+                            //->options(Brand::all()->pluck('name', 'id'))
+                            ->prefixIcon('tabler-layout-list')
+                            ->preload()
+                            ->relationship(name: 'productmaincategory', titleAttribute: 'name')
+                            ->native(false)
+                            ->searchable()
+                            ->required()
+                            ->columns(1),
+                        TextInput::make('name')
+                            ->label('Alkategória neve')
+                            ->required()
+                            ->helperText('Adja mega az új termék alkategória elnevezését.')
+                            ->maxLength(255)
+                            ->columns(1),
+                    ]),
             ]);
     }
 
@@ -83,24 +87,26 @@ class ProductsubcategoryResource extends Resource
                     ->icon('tabler-circle-plus')
                     ->slideOver()
                     ->form([
-                        Select::make('productmaincategory_id')
-                            ->label('Főkategória')
-                            ->helperText('Válassza ki, melyik főkategóriához kíván alkategóriát létrehozni.')
-                            //->options(Brand::all()->pluck('name', 'id'))
-                            ->prefixIcon('tabler-layout-list')
-                            ->preload()
-                            ->relationship(name: 'productmaincategory', titleAttribute: 'name')
-                            ->native(false)
-                            ->searchable()
-                            ->required()
-                            ->columnSpanFull(),
-                        TextInput::make('name')
-                            ->label('Alkategória neve')
-                            ->required()
-                            ->helperText('Adja mega az új termék alkategória elnevezését.')
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('productmaincategory_id')
+                                    ->label('Főkategória')
+                                    ->helperText('Válassza ki, melyik főkategóriához kíván alkategóriát létrehozni.')
+                                    //->options(Brand::all()->pluck('name', 'id'))
+                                    ->prefixIcon('tabler-layout-list')
+                                    ->preload()
+                                    ->relationship(name: 'productmaincategory', titleAttribute: 'name')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->required()
+                                    ->columnSpanFull(),
+                                TextInput::make('name')
+                                    ->label('Alkategória neve')
+                                    ->required()
+                                    ->helperText('Adja mega az új termék alkategória elnevezését.')
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                            ]),
                     ]),
             ])
             ->columns([
@@ -135,7 +141,7 @@ class ProductsubcategoryResource extends Resource
                 Tables\Filters\TrashedFilter::make()
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Alkategória szerkesztése')->modalWidth('md'),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Alkategória szerkesztése')->modalWidth('xl'),
                 //Tables\Actions\DissociateAction::make(),
                 Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false),

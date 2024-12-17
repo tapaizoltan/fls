@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->integer('brand_id')->nullable()->comment('márka')->after('productsubcategory_id');
+        Schema::table('brands', function (Blueprint $table) {
+            $table->string('supplier_id')->comment('beszállító')->after('id');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['brand_id']);
+        Schema::table('brands', function (Blueprint $table) {
+            $table->dropColumn(['supplier_id']);
         });
     }
 };

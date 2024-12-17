@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -74,6 +75,11 @@ Route::get('/test', function () {
     //
     // Vállalkozás cégjegyzékszámának lekérdezése adószám alapján az e-cégkivonat rendszeréből.
     //
+
+    dd(Product::find(1)->supplier);
+
+    return;
+
     $url = 'https://e-cegkivonat.hu/talalat?adoszam=13638722';
 
     $ch = curl_init($url);

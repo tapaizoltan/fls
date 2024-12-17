@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('productprices', function (Blueprint $table) {
             $table->id();
+            $table->integer('product_id');
+            $table->integer('net_purchase_price')->nullable()->comment('beszerzési netto ár');
+            $table->integer('profit_margin')->nullable()->comment('haszonkulcs');
             $table->timestamps();
         });
     }

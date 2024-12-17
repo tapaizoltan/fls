@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Productproperty extends Model
+class Supplier extends Model
 {
     protected $guarded = [];
     use SoftDeletes;
-
-    public function product()
+    
+    public function brands()
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(Brand::class);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Product extends Model
 {
@@ -32,6 +34,11 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function supplier(): HasOneThrough
+    {
+        return $this->hasOneThrough(Supplier::class, Brand::class, 'supplier_id', 'id', );
+    }
+
     public function productmaincategory()
     {
         return $this->belongsTo(Productmaincategory::class);
@@ -40,11 +47,6 @@ class Product extends Model
     public function productsubcategory()
     {
         return $this->belongsTo(Productsubcategory::class);
-    }
-
-    public function productproperty()
-    {
-        return $this->hasOne(Productproperty::class);
     }
 
     public function productprice()

@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Brand;
 use App\Models\Product;
+use App\Models\Supplier;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -13,16 +14,23 @@ use App\Models\Productsubcategory;
 use Illuminate\Support\HtmlString;
 use App\Models\Productmaincategory;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\ToggleButtons;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ProductResource\RelationManagers;
@@ -38,106 +46,270 @@ class ProductResource extends Resource
     protected static ?string $pluralModelLabel = 'termékek';
     protected static ?int $navigationSort = 1;
 
+    // public static function getBrandOptions()
+    // {
+    //     return Brand::all()
+    //         ->groupBy(function ($brand) {
+    //             return $brand->created_at; // Csoportosítás dátum szerint
+    //         })
+    //         ->map(function ($group) {
+    //             return $group->pluck('name', 'id'); // A name és id értékek visszaadása
+    //         });
+    // }
+
+    public static function getGroupedBrandOptions(): array
+    {
+        $brands = Brand::with('supplier')->get();
+        $grouped = $brands->groupBy(function ($brand) {
+            return $brand->supplier?->name ?? 'Nincs beszállító'; // Supplier név vagy alapértelmezett szöveg
+        });
+        $options = [];
+        foreach ($grouped as $supplierName => $brands) {
+            foreach ($brands as $brand) {
+                $options[$supplierName][$brand->id] = $brand->name; // Csoport => [brand_id => brand_name]
+            }
+        }
+        return $options;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Grid::make(4)
+                Grid::make(12)
                     ->schema([
-                        Select::make('brand_id')
-                            ->label('Márka')
-                            ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új márkanevet, amit később bármelyik termékhez használhat.')
-                            //->options(Brand::all()->pluck('name', 'id'))
-                            ->prefixIcon('tabler-layout-list')
-                            ->preload()
-                            ->relationship(name: 'brand', titleAttribute: 'name')
-                            ->native(false)
-                            ->searchable()
-                            ->columnSpan(2)
-                            ->createOptionModalHeading('Új márka, márkanév')
-                            ->createOptionAction(fn ($action) => $action->modalWidth('sm'))
-                            ->createOptionForm([
-
-                                    TextInput::make('name')
-                                    ->label('Márkanév')
-                                    ->helperText('Adja meg az új márka nevét.')
-                                    ->required()
-                                    ->columnSpanFull()
-                                    ->unique(),
-                            ]),
-
-                        Select::make('productmaincategory_id')
-                            ->label('Főkategória')
-                            ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új főkategóriát, amit később bármelyik termékhez használhat.')
-                            //->options(Brand::all()->pluck('name', 'id'))
-                            ->prefixIcon('tabler-layout-list')
-                            ->preload()
-                            ->relationship(name: 'productmaincategory', titleAttribute: 'name')
-                            ->native(false)
-                            ->searchable()
-                            ->columnSpan(2)
-                            ->createOptionModalHeading('Új főkategória')
-                            ->createOptionForm([
-                                Grid::make(2)
-                                ->schema([
-                                    TextInput::make('name')
-                                    ->label('Főkategória neve')
-                                    ->helperText('Adja meg az új főkategória nevét. Célszerű olyat választani ami a későbbiekben segítségére lehet a könnyebb azonosítás tekintetében.')
-                                    ->required()
-                                    ->columnSpan(1)
-                                    ->unique(),
-                                ])
-                            ]),
-
-                        Select::make('productsubcategory_id')
-                            ->label('Alkategória')
-                            ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új alkategóriát, amit később bármelyik termékhez használhat.')
-                            //->options(Brand::all()->pluck('name', 'id'))
-                            ->prefixIcon('tabler-layout-list')
-                            ->preload()
-                            ->relationship(name: 'productsubcategory', titleAttribute: 'name')
-                            ->native(false)
-                            ->searchable()
-                            ->columnSpan(2)
-                            ->createOptionModalHeading('Új alkategória')
-                            ->createOptionForm([
-                                Grid::make(2)
-                                    ->schema([
-                                        Select::make('productmaincategory_id')
-                                            ->label('Főkategória')
-                                            ->helperText('Válassza ki melyik főkategória alá kíván létrehozni alkategóriát.')
-                                            ->options(Productmaincategory::all()->pluck('name', 'id'))
-                                            ->prefixIcon('tabler-layout-list')
-                                            ->preload()
-                                            ->native(false)
-                                            ->searchable()
-                                            ->columnSpan(1)
-                                            ->required()
-                                            ->unique(),
-                                        TextInput::make('name')
-                                            ->label('Alkategória neve')
-                                            ->helperText('Adja meg az új alkategória nevét. Célszerű olyat választani ami a későbbiekben segítségére lehet a könnyebb azonosítás tekintetében.')
-                                            ->required()
-                                            ->columnSpan(1)
-                                            ->unique(),
-                                    ])
-                            ]),
-
-                        Fieldset::make('Termék')
+                        Section::make()
                             ->schema([
-                                TextInput::make('name')
-                                    ->label('Neve')
-                                    ->helperText('Adja meg az új termék nevét.')
-                                    ->required()
-                                    ->columnSpan(1),
+                                // Select::make('brand_id')
+                                //     ->label('Márka')
+                                //     ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új márkanevet, amit később bármelyik termékhez használhat.')
+                                //     //->options(Brand::all()->pluck('name', 'id'))
+                                //     ->prefixIcon('tabler-layout-list')
+                                //     ->preload()
+                                //     ->relationship(name: 'brand', titleAttribute: 'name')
+                                //     ->native(false)
+                                //     ->searchable()
+                                //     ->columnSpan(1)
+                                //     ->createOptionModalHeading('Új márka, márkanév')
+                                //     ->createOptionAction(fn($action) => $action->modalWidth('sm'))
+                                //     ->createOptionForm([
 
-                                Textarea::make('description')
-                                    ->label('Leírása')
-                                    ->helperText('Itt adhat néhány sor rövid ismertetőt a termékről.')
-                                    ->rows(5)
-                                    ->cols(20)
-                                    ->columnSpan(1),
+                                //         TextInput::make('name')
+                                //             ->label('Márkanév')
+                                //             ->helperText('Adja meg az új márka nevét.')
+                                //             ->required()
+                                //             ->columnSpanFull()
+                                //             ->unique(),
+                                //     ]),
+                                Select::make('brand_id')
+                                    ->label('Márka')
+                                    ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új márkanevet, amit később bármelyik termékhez használhat.')
+                                    ->options(self::getGroupedBrandOptions())
+                                    ->prefixIcon('tabler-layout-list')
+                                    ->preload()
+                                    ->searchable()
+                                    // ->relationship(name: 'brand', titleAttribute: 'name')
+                                    ->native(false)
+                                    ->columnSpan(1)
+                                    ->createOptionModalHeading('Új márka, márkanév')
+                                    ->createOptionAction(fn($action) => $action->modalWidth('xl'))
+                                    ->createOptionForm([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Select::make('supplier_id')
+                                                    ->label('Beszállító')
+                                                    ->helperText('Válassza ki a beszállítót.')
+                                                    ->options(Supplier::all()->pluck('name', 'id'))
+                                                    //->relationship(name: 'supplier', titleAttribute: 'name')
+                                                    ->prefixIcon('tabler-layout-list')
+                                                    ->preload()
+                                                    ->required()
+                                                    ->searchable()
+                                                    ->columns(1)
+                                                    ->native(false),
+                                                TextInput::make('name')
+                                                    ->label('Márkanév')
+                                                    ->helperText('Adja meg az új márka nevét.')
+                                                    ->required()
+                                                    ->columns(1)
+                                                    ->unique(),
+                                            ]),
+                                    ])
+                                    ->createOptionUsing(function (array $data): int {
+                                        $brand = Brand::create([
+                                            'supplier_id' => $data['supplier_id'],
+                                            'name' => $data['name'],
+                                        ]);
+                                    
+                                        Notification::make()
+                                            ->title('Az új márkanév rögzítése sikerült!')
+                                            ->success()
+                                            ->send();
+                                    
+                                        return $brand->getKey();
+                                    })
+                                    ->required(),
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 6,
+                                'xl' => 6,
+                                '2xl' => 4,
                             ]),
+
+                        Section::make()
+                            ->schema([
+                                Select::make('productmaincategory_id')
+                                    ->label('Főkategória')
+                                    ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új főkategóriát, amit később bármelyik termékhez használhat.')
+                                    ->prefixIcon('tabler-layout-list')
+                                    ->preload()
+                                    ->options(function () {
+                                        return Productmaincategory::pluck('name', 'id');
+                                    })
+                                    //->relationship(name: 'productmaincategory', titleAttribute: 'name')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->columnSpan(1)
+                                    ->createOptionAction(fn($action) => $action->modalWidth('md'))
+                                    ->createOptionModalHeading('Új főkategória')
+                                    ->createOptionForm([
+                                        Grid::make(2)
+                                            ->schema([
+                                                TextInput::make('name')
+                                                    ->label('Főkategória neve')
+                                                    ->helperText('Adja meg az új főkategória nevét. Célszerű olyat választani ami a későbbiekben segítségére lehet a könnyebb azonosítás tekintetében.')
+                                                    ->required()
+                                                    ->columnSpanFull()
+                                                    ->unique(),
+                                            ])
+                                    ])
+                                    ->createOptionUsing(function (array $data): int {
+
+                                        $category = ProductMainCategory::create([
+                                            'name' => $data['name'],
+                                        ]);
+                                
+                                        // Értesítés küldése
+                                        Notification::make()
+                                            ->title('Az új főkategória rögzítése sikerült!')
+                                            ->success()
+                                            ->send();
+                                
+                                        return $category->getKey();
+                                    }),
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 6,
+                                'xl' => 6,
+                                '2xl' => 4,
+                            ]),
+
+                        Section::make()
+                            ->schema([
+                                Select::make('productsubcategory_id')
+                                    ->label('Alkategória')
+                                    ->helperText('Válassza ki, vagy a "+" gombra kattintva, hozzon létre egy új alkategóriát, amit később bármelyik termékhez használhat.')
+                                    ->prefixIcon('tabler-layout-list')
+                                    ->preload()
+                                    ->options(function () {
+                                        return Productsubcategory::pluck('name', 'id');
+                                    })
+                                    //->relationship(name: 'productsubcategory', titleAttribute: 'name')
+                                    ->native(false)
+                                    ->searchable()
+                                    ->columnSpan(1)
+                                    ->createOptionModalHeading('Új alkategória')
+                                    ->createOptionForm([
+                                        Grid::make(2)
+                                            ->schema([
+                                                Select::make('productmaincategory_id')
+                                                    ->label('Főkategória')
+                                                    ->helperText('Válassza ki melyik főkategória alá kíván létrehozni alkategóriát.')
+                                                    ->options(Productmaincategory::all()->pluck('name', 'id'))
+                                                    ->prefixIcon('tabler-layout-list')
+                                                    ->preload()
+                                                    ->native(false)
+                                                    ->searchable()
+                                                    ->columnSpan(1)
+                                                    ->required(),
+                                                //->dehydrated(false),
+                                                TextInput::make('name')
+                                                    ->label('Alkategória neve')
+                                                    ->helperText('Adja meg az új alkategória nevét. Célszerű olyat választani ami a későbbiekben segítségére lehet a könnyebb azonosítás tekintetében.')
+                                                    ->required()
+                                                    ->columnSpan(1)
+                                                    ->unique(),
+                                            ])
+
+                                    ])
+                                    ->createOptionUsing(function (array $data): int {
+                                        // Új alkategória létrehozása
+                                        $subcategory = Productsubcategory::create([
+                                            'productmaincategory_id' => $data['productmaincategory_id'],
+                                            'name' => $data['name'],
+                                        ]);
+                                
+                                        // Értesítés küldése
+                                        Notification::make()
+                                            ->title('Az új alkategória rögzítése sikerült!')
+                                            ->success()
+                                            ->send();
+                                
+                                        return $subcategory->getKey(); // Visszatér az új alkategória kulcsával
+                                    }),
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 6,
+                                'xl' => 6,
+                                '2xl' => 4,
+                            ]),
+                    ]),
+
+                Grid::make(12)
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                FileUpload::make('image_path')
+                                    ->label('Kép feltöltése')
+                                    ->helperText('Feltölthet fényképet a termékről, hogy az könnyebben beazonosítható legyen.')
+                                    ->directory('form-attachments')
+                                    ->image()
+                                    ->maxSize(10000),
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 6,
+                                'xl' => 6,
+                                '2xl' => 3,
+                            ]),
+
+                        Section::make()
+                            ->schema([
+                                Fieldset::make('Termék paraméterek')
+                                    ->schema([
+                                        Textarea::make('description')
+                                            ->label('Rövid leírás, jegyzet a termékről.')
+                                            ->helperText('Itt számos olyan információt adhat meg a termékről amire nincs részletes beállítás, vagy fontos lehet a termékkel kapcsolatban.')
+                                            ->rows(10)
+                                            ->cols(20),
+                                    ])->columns([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                        'xl' => 2,
+                                        '2xl' => 2,
+                                    ]),
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 6,
+                                'xl' => 6,
+                                '2xl' => 9,
+                            ]),
+
                     ]),
             ]);
     }
@@ -151,6 +323,11 @@ class ProductResource extends Resource
             ->emptyStateDescription('Az "Új termék" gombra kattintva rögzíthet új terméket a rendszerhez.')
             ->emptyStateIcon('tabler-database-search')
             ->columns([
+                ImageColumn::make('image_path')
+                    ->label('Termékfotó')
+                    //->square()
+                    ->circular(),
+
                 TextColumn::make('brand_id')
                     ->label('Márka')
                     ->sortable()
@@ -163,7 +340,7 @@ class ProductResource extends Resource
                         });
                     }),
 
-                    TextColumn::make('productMainCategory.name')
+                TextColumn::make('productMainCategory.name')
                     ->label('Főkategória')
                     ->formatStateUsing(function ($record) {
                         return new HtmlString('<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productMainCategory?->name . '</div></span>');
@@ -174,7 +351,7 @@ class ProductResource extends Resource
                             $query->where('name', 'like', "%{$search}%");
                         });
                     }),
-                
+
                 TextColumn::make('productSubCategory.name')
                     ->label('Alkategória')
                     ->formatStateUsing(function ($record) {
@@ -186,40 +363,24 @@ class ProductResource extends Resource
                             $query->where('name', 'like', "%{$search}%");
                         });
                     }),
-                // TextColumn::make('productmaincategory_id')
-                //     ->label('Kategória')
-                //     ->formatStateUsing(function ($record) : HtmlString {
-                //         if (!empty($record->productsubcategory?->name)) {
-                //             //$productcategoriesbadges =  '<p>' . $record->name . '</p>
-                //             $productcategoriesbadges = '
-                //             <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productmaincategory?->name . '</span></div><div style="display: flex; flex-wrap: wrap; gap: 6px; margin-left:30px; margin-bottom: 7px;"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="gray"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-corner-down-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4" /></svg><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productsubcategory?->name . '</span></div>';
-                //         }
-                //         if (empty($record->productsubcategory?->name)) {
-                //             $productcategoriesbadges = '<p>' . $record->name . '</p>
-                //         <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productmaincategory?->name . '</span></div>';
-                //         }
-                //         return new HtmlString($productcategoriesbadges);
-                //     })
-
-
-
-
-                    //->html()
-                    //->searchable(['productmaicategory_id', 'productsubcategory_id']),
-                    // ->searchable(query: function (Builder $query, string $search): Builder {
-                    //     return $query
-                    //         //->where('name', 'like', "%{$search}%")
-                    //         ->where('id', function ($query) use ($search) {
-                    //             $query->where('name', 'like', "%{$search}%");
-                    //         })
-                    //         ->orWhere('id', function ($query) use ($search) {
-                    //             $query->where('name', 'like', "%{$search}%");
-                    //         });
-                    // }),
-                    // ,
-                TextColumn::make('properties')
+                TextColumn::make('width')
                     ->label('Tulajdonságok')
-                    ,
+                    ->description(function ($record): HtmlString {
+                        if ($record->description != null) {
+                            $text = $record->description;
+                            $wrapText = '...';
+                            $count = 40;
+                            if (strlen($record->description) > $count) {
+                                preg_match('/^.{0,' . $count . '}(?:.*?)\b/siu', $record->description, $matches);
+                                $text = $matches[0];
+                            } else {
+                                $wrapText = '';
+                            }
+                            return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $text . $wrapText . '</span>');
+                        } else {
+                            return new HtmlString('');
+                        }
+                    }),
             ])
             ->filters([
                 //
