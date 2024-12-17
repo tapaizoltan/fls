@@ -55,16 +55,15 @@ class ProductResource extends Resource
                             ->searchable()
                             ->columnSpan(2)
                             ->createOptionModalHeading('Új márka, márkanév')
+                            ->createOptionAction(fn ($action) => $action->modalWidth('sm'))
                             ->createOptionForm([
-                                Grid::make(2)
-                                ->schema([
+
                                     TextInput::make('name')
                                     ->label('Márkanév')
                                     ->helperText('Adja meg az új márka nevét.')
                                     ->required()
-                                    ->columnSpan(1)
+                                    ->columnSpanFull()
                                     ->unique(),
-                                ])
                             ]),
 
                         Select::make('productmaincategory_id')
@@ -154,40 +153,70 @@ class ProductResource extends Resource
             ->columns([
                 TextColumn::make('brand_id')
                     ->label('Márka')
+                    ->sortable()
                     ->formatStateUsing(function ($record) {
                         return $record->brand?->name;
-                    }),
-                TextColumn::make('name')
-                    ->label('Megnevezés')
-                    ->formatStateUsing(function ($record) {
-                        if (!empty($record->productsubcategory?->name)) {
-                            $productcategoriesbadges =  '<p>' . $record->name . '</p>
-                            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productmaincategory?->name . '</span><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productsubcategory?->name . '</span></div>';
-                        }
-                        if (empty($record->productsubcategory?->name)) {
-                            $productcategoriesbadges = '<p>' . $record->name . '</p>
-                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productmaincategory?->name . '</span></div>';
-                        }
-                        return $productcategoriesbadges;
                     })
-                    ->html()
-                    // ->description(function ($record): HtmlString {
-                    //     if ($record->description != null) {
-                    //         $text = $record->description;
-                    //         $wrapText = '...';
-                    //         $count = 40;
-                    //         if (strlen($record->description) > $count) {
-                    //             preg_match('/^.{0,' . $count . '}(?:.*?)\b/siu', $record->description, $matches);
-                    //             $text = $matches[0];
-                    //         } else {
-                    //             $wrapText = '';
-                    //         }
-                    //         return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $text . $wrapText . '</span>');
-                    //     } else {
-                    //         return new HtmlString('');
-                    //     }
-                    // })
-                    ->searchable(['name', 'description']),
+                    ->searchable(query: function ($query, $search) {
+                        return $query->whereHas('brand', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                    }),
+
+                    TextColumn::make('productMainCategory.name')
+                    ->label('Főkategória')
+                    ->formatStateUsing(function ($record) {
+                        return new HtmlString('<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productMainCategory?->name . '</div></span>');
+                    })
+                    ->sortable()
+                    ->searchable(query: function ($query, $search) {
+                        return $query->whereHas('productMainCategory', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                    }),
+                
+                TextColumn::make('productSubCategory.name')
+                    ->label('Alkategória')
+                    ->formatStateUsing(function ($record) {
+                        return new HtmlString('<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productSubCategory?->name . '</div></span>');
+                    })
+                    ->sortable()
+                    ->searchable(query: function ($query, $search) {
+                        return $query->whereHas('productSubCategory', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                    }),
+                // TextColumn::make('productmaincategory_id')
+                //     ->label('Kategória')
+                //     ->formatStateUsing(function ($record) : HtmlString {
+                //         if (!empty($record->productsubcategory?->name)) {
+                //             //$productcategoriesbadges =  '<p>' . $record->name . '</p>
+                //             $productcategoriesbadges = '
+                //             <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productmaincategory?->name . '</span></div><div style="display: flex; flex-wrap: wrap; gap: 6px; margin-left:30px; margin-bottom: 7px;"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="gray"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-corner-down-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 6v6a3 3 0 0 0 3 3h10l-4 -4m0 8l4 -4" /></svg><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productsubcategory?->name . '</span></div>';
+                //         }
+                //         if (empty($record->productsubcategory?->name)) {
+                //             $productcategoriesbadges = '<p>' . $record->name . '</p>
+                //         <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px;"><span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 fi-color-custom bg-custom-50 text-custom-600 ring-custom-600/10 dark:bg-custom-400/10 dark:text-custom-400 dark:ring-custom-400/30 fi-color-primary" style="--c-50:var(--primary-50);--c-400:var(--primary-400);--c-600:var(--primary-600);">' . $record->productmaincategory?->name . '</span></div>';
+                //         }
+                //         return new HtmlString($productcategoriesbadges);
+                //     })
+
+
+
+
+                    //->html()
+                    //->searchable(['productmaicategory_id', 'productsubcategory_id']),
+                    // ->searchable(query: function (Builder $query, string $search): Builder {
+                    //     return $query
+                    //         //->where('name', 'like', "%{$search}%")
+                    //         ->where('id', function ($query) use ($search) {
+                    //             $query->where('name', 'like', "%{$search}%");
+                    //         })
+                    //         ->orWhere('id', function ($query) use ($search) {
+                    //             $query->where('name', 'like', "%{$search}%");
+                    //         });
+                    // }),
+                    // ,
                 TextColumn::make('properties')
                     ->label('Tulajdonságok')
                     ,

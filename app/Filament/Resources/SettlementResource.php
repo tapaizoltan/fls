@@ -10,12 +10,13 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Filament\Clusters\Settings;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Pages\SubNavigationPosition;
+use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SettlementResource\Pages;
 use App\Filament\Resources\SettlementResource\RelationManagers;
-use Filament\Forms\Components\TextInput;
 
 class SettlementResource extends Resource
 {
@@ -34,14 +35,14 @@ class SettlementResource extends Resource
             ->schema([
                 TextInput::make('zip_code')
                     ->label('Postai irányítószám')
-                    ->helperText('Adja meg a rögzíteni kívánt új település postai irányítószámát.')
+                    ->helperText('Módosítsa a település postai irányítószámát.')
                     ->numeric()
                     ->required()
                     ->prefixIcon('tabler-numbers')
                     ->columns(2),
                 TextInput::make('settlement')
                     ->label('Település név')
-                    ->helperText('Adja meg a rögzíteni kívánt új település nevét.')
+                    ->helperText('Módosítsa a kívánt település nevét.')
                     ->required()
                     ->prefixIcon('tabler-writing')
                     ->columns(2),
@@ -57,23 +58,47 @@ class SettlementResource extends Resource
             ->emptyStateHeading('Nincs megjeleníthető település.')
             ->emptyStateDescription('Az "Új település" gombra kattintva rögzíthet település és posti irányítószámot.')
             ->emptyStateIcon('tabler-database-search')
+            ->headerActions([
+                CreateAction::make()
+                    ->createAnother(false)
+                    ->modalWidth('md')
+                    ->icon('tabler-circle-plus')
+                    ->slideOver()
+                    ->form([
+                        TextInput::make('zip_code')
+                            ->label('Postai irányítószám')
+                            ->helperText('Adja meg a rögzíteni kívánt új település postai irányítószámát.')
+                            ->numeric()
+                            ->required()
+                            ->prefixIcon('tabler-numbers')
+                            ->columnSpanFull(),
+                        TextInput::make('settlement')
+                            ->label('Település név')
+                            ->helperText('Adja meg a rögzíteni kívánt új település nevét.')
+                            ->required()
+                            ->prefixIcon('tabler-writing')
+                            ->columnSpanFull(),
+                    ]),
+            ])
             ->columns([
                 TextColumn::make('zip_code')
                     ->label('Postai irányítószám')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('settlement')
                     ->label('Település neve')
+                    ->sortable()
                     ->searchable(),
             ])
             ->openRecordUrlInNewTab()
             ->filters([
                 Tables\Filters\TrashedFilter::make()
             ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make()->label('Új település')->icon('tabler-circle-plus')->modalHeading('Új település')->createAnother(false),
-            ])
+            // ->headerActions([
+            //     Tables\Actions\CreateAction::make()->label('Új település')->icon('tabler-circle-plus')->modalHeading('Új település')->slideOver()->modalWidth('xl')->createAnother(false),
+            // ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Település szerkesztése'),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Település szerkesztése')->modalWidth('xl'),
                 //Tables\Actions\DissociateAction::make(),
                 Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false),

@@ -14,7 +14,7 @@ class ListCustomers extends ListRecords
     {
         return [
             // Actions\CreateAction::make()->label('Új ügyfél')->icon('tabler-circle-plus'),
-            Actions\CreateAction::make()->label('Új ügyfél')->icon('tabler-circle-plus')->slideOver(),
+            Actions\CreateAction::make()->label('Új ügyfél')->icon('tabler-circle-plus')->slideOver()->createAnother(false),
         ];
     }
 }

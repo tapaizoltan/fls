@@ -38,7 +38,7 @@ class IndustrytypeResource extends Resource
                     ->helperText('Módosítsa az iparág nevét.')
                     ->required()
                     ->prefixIcon('tabler-writing')
-                    ->columns(2),
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -60,7 +60,7 @@ class IndustrytypeResource extends Resource
                 Tables\Filters\TrashedFilter::make()
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Iparág szerkesztése'),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Iparág szerkesztése')->modalWidth('md'),
                 //Tables\Actions\DissociateAction::make(),
                 Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false),

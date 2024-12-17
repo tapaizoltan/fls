@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Filament\Clusters\Settings;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Pages\SubNavigationPosition;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BrandResource\Pages;
@@ -30,9 +31,14 @@ class BrandResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+        ->schema([
+            TextInput::make('name')
+                ->label('Márkanév')
+                ->helperText('Módosítsa a márkanevet.')
+                ->required()
+                ->prefixIcon('tabler-writing')
+                ->columnSpanFull(),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -53,7 +59,7 @@ class BrandResource extends Resource
                 Tables\Filters\TrashedFilter::make()
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Iparág szerkesztése'),
+                Tables\Actions\EditAction::make()->label(false)->icon('tabler-pencil')->modalHeading('Márkanév szerkesztése')->modalWidth('md'),
                 //Tables\Actions\DissociateAction::make(),
                 Tables\Actions\DeleteAction::make()->label(false)->icon('tabler-trash'),
                 Tables\Actions\ForceDeleteAction::make()->label(false),

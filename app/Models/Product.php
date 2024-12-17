@@ -41,4 +41,14 @@ class Product extends Model
     {
         return $this->belongsTo(Productsubcategory::class);
     }
+
+    public function productproperty()
+    {
+        return $this->hasOne(Productproperty::class);
+    }
+
+    public function productprice()
+    {
+        return $this->hasOne(Productprice::class);
+    }
 }
