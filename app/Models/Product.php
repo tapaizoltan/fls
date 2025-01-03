@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
+use App\Models\Brand;
+
 class Product extends Model
 {
     protected $guarded = [];
@@ -49,8 +51,40 @@ class Product extends Model
         return $this->belongsTo(Productsubcategory::class);
     }
 
-    public function productprice()
+    public function productprices()
     {
-        return $this->hasOne(Productprice::class);
+        return $this->hasMany(Productprice::class);
     }
+
+    public static function getGroupedProducts(): array
+{
+    return Brand::query()
+        ->with(['products' => function ($query) {
+            $query->select('id', 'width', 'height', 'structure', 'rim_diameter', 'brand_id', 'productmaincategory_id', 'productsubcategory_id')
+                ->with(['productmaincategory:id,name', 'productsubcategory:id,name']); // Betöltjük a fő- és alkategóriát
+        }])
+        ->get(['id', 'name'])
+        ->mapWithKeys(function ($brand) {
+            return [
+                $brand->name => $brand->products->mapWithKeys(function ($product) {
+                    // Termék fő- és alkategória
+                    $mainCategoryName = $product->productmaincategory->name ?? 'N/A';
+                    $subCategoryName = $product->productsubcategory->name ?? 'N/A';
+                    
+                    // Az új név formázása
+                    $formattedName = sprintf(
+                        '%d/%d%s%d (%s/%s)', // Terméknév és kategóriák
+                        $product->width,
+                        $product->height,
+                        strtoupper($product->structure),
+                        $product->rim_diameter,
+                        $mainCategoryName,
+                        $subCategoryName
+                    );
+                    return [$product->id => $formattedName];
+                }),
+            ];
+        })
+        ->toArray();
+}
 }

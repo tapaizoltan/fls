@@ -13,6 +13,7 @@ class Sale extends Model
 {
     protected $guarded = [];
     use SoftDeletes;
+    protected $fillable = ['product_id',];
 
     protected $casts = [
         'status' => SalesStatus::class,

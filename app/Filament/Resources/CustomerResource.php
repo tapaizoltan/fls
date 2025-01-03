@@ -77,35 +77,35 @@ class CustomerResource extends Resource
                     ->schema([
                         Section::make()
                             ->schema([
-                                        TextInput::make('name')
-                                            ->label('Ügyfél neve')
-                                            ->helperText('Adja meg az ügyfél nevét.')
-                                            ->prefixIcon('tabler-writing-sign')
-                                            ->required()
-                                            ->minLength(3)
-                                            ->maxLength(255)
-                                            ->columnSpanFull(),
+                                TextInput::make('name')
+                                    ->label('Ügyfél neve')
+                                    ->helperText('Adja meg az ügyfél nevét.')
+                                    ->prefixIcon('tabler-writing-sign')
+                                    ->required()
+                                    ->minLength(3)
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
 
-                                        TextInput::make('registration_number')
-                                            ->helperText('Adja meg az ügyfél nyilvántartási (cégjegyzék) számát.')
-                                            ->label('Nyilvántartási szám')
-                                            ->prefixIcon('tabler-writing-sign')
-                                            ->mask('99 99 99999999')
-                                            ->placeholder('__ __ ________')
-                                            ->required()
-                                            ->minLength(3)
-                                            ->maxLength(255),
+                                TextInput::make('registration_number')
+                                    ->helperText('Adja meg az ügyfél nyilvántartási (cégjegyzék) számát.')
+                                    ->label('Nyilvántartási szám')
+                                    ->prefixIcon('tabler-writing-sign')
+                                    ->mask('99 99 99999999')
+                                    ->placeholder('__ __ ________')
+                                    ->required()
+                                    ->minLength(3)
+                                    ->maxLength(255),
 
-                                        TextInput::make('tax_number')
-                                            ->helperText('Adja meg az ügyfél adószámát.')
-                                            ->label('Adó szám')
-                                            ->prefixIcon('tabler-writing-sign')
-                                            ->mask('99999999-9-99')
-                                            ->placeholder('________-_-__')
-                                            ->required()
-                                            ->minLength(3)
-                                            ->maxLength(255),
-                                    
+                                TextInput::make('tax_number')
+                                    ->helperText('Adja meg az ügyfél adószámát.')
+                                    ->label('Adó szám')
+                                    ->prefixIcon('tabler-writing-sign')
+                                    ->mask('99999999-9-99')
+                                    ->placeholder('________-_-__')
+                                    ->required()
+                                    ->minLength(3)
+                                    ->maxLength(255),
+
 
                                 Fieldset::make('Ügyfél információk')
                                     ->schema([
@@ -230,8 +230,7 @@ class CustomerResource extends Resource
                                 $wrapText = '';
                             }
                             return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $text . $wrapText . '</span>');
-                        }
-                        else {
+                        } else {
                             return new HtmlString('');
                         }
                     })
@@ -602,7 +601,7 @@ class CustomerResource extends Resource
                     //                         '4' => 'Lezárt nyert',
                     //                         '5' => 'Lezárt vesztett',
                     //                     ])
-                                        
+
                     //                     ->reactive()
                     //                     // ->afterStateUpdated(fn(callable $set) => $set('status', null))
                     //                     ->afterStateUpdated(function (callable $set, callable $get) {
@@ -1341,9 +1340,9 @@ class CustomerResource extends Resource
                     ->icon('tabler-history')
                     ->schema([
                         View::make('filament.infolists.customer-activity-log')
-                        ->viewData([
-                            'activities' => $infolist->record->activities
-                        ]),
+                            ->viewData([
+                                'activities' => $infolist->record->activities
+                            ]),
                     ]),
             ]);
     }

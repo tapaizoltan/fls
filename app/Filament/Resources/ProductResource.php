@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\Productsubcategory;
+use Filament\Resources\Pages\Page;
 use Illuminate\Support\HtmlString;
 use App\Models\Productmaincategory;
 use Filament\Forms\Components\Grid;
@@ -140,12 +141,12 @@ class ProductResource extends Resource
                                             'supplier_id' => $data['supplier_id'],
                                             'name' => $data['name'],
                                         ]);
-                                    
+
                                         Notification::make()
                                             ->title('Az új márkanév rögzítése sikerült!')
                                             ->success()
                                             ->send();
-                                    
+
                                         return $brand->getKey();
                                     })
                                     ->required(),
@@ -189,13 +190,13 @@ class ProductResource extends Resource
                                         $category = ProductMainCategory::create([
                                             'name' => $data['name'],
                                         ]);
-                                
+
                                         // Értesítés küldése
                                         Notification::make()
                                             ->title('Az új főkategória rögzítése sikerült!')
                                             ->success()
                                             ->send();
-                                
+
                                         return $category->getKey();
                                     }),
                             ])->columnSpan([
@@ -245,19 +246,17 @@ class ProductResource extends Resource
 
                                     ])
                                     ->createOptionUsing(function (array $data): int {
-                                        // Új alkategória létrehozása
                                         $subcategory = Productsubcategory::create([
                                             'productmaincategory_id' => $data['productmaincategory_id'],
                                             'name' => $data['name'],
                                         ]);
-                                
-                                        // Értesítés küldése
+
                                         Notification::make()
                                             ->title('Az új alkategória rögzítése sikerült!')
                                             ->success()
                                             ->send();
-                                
-                                        return $subcategory->getKey(); // Visszatér az új alkategória kulcsával
+
+                                        return $subcategory->getKey();
                                     }),
                             ])->columnSpan([
                                 'sm' => 6,
@@ -266,10 +265,7 @@ class ProductResource extends Resource
                                 'xl' => 6,
                                 '2xl' => 4,
                             ]),
-                    ]),
 
-                Grid::make(12)
-                    ->schema([
                         Section::make()
                             ->schema([
                                 FileUpload::make('image_path')
@@ -283,33 +279,81 @@ class ProductResource extends Resource
                                 'md' => 6,
                                 'lg' => 6,
                                 'xl' => 6,
-                                '2xl' => 3,
+                                '2xl' => 4,
                             ]),
+                    ]),
 
-                        Section::make()
+                Grid::make(12)
+                    ->schema([
+                        Fieldset::make('Termék paraméterek')
                             ->schema([
-                                Fieldset::make('Termék paraméterek')
-                                    ->schema([
-                                        Textarea::make('description')
-                                            ->label('Rövid leírás, jegyzet a termékről.')
-                                            ->helperText('Itt számos olyan információt adhat meg a termékről amire nincs részletes beállítás, vagy fontos lehet a termékkel kapcsolatban.')
-                                            ->rows(10)
-                                            ->cols(20),
-                                    ])->columns([
-                                        'sm' => 1,
-                                        'md' => 2,
-                                        'lg' => 2,
-                                        'xl' => 2,
-                                        '2xl' => 2,
-                                    ]),
-                            ])->columnSpan([
-                                'sm' => 6,
-                                'md' => 6,
-                                'lg' => 6,
-                                'xl' => 6,
-                                '2xl' => 9,
+                                ToggleButtons::make('season')
+                                    ->label('Évszak')
+                                    ->helperText('Válassza ki az adott termék évszaknak megfelelő besorolását.')
+                                    ->inline()
+                                    // ->grouped()
+                                    ->options([
+                                        '1' => 'Nyári',
+                                        '2' => 'Téli',
+                                        '3' => 'Négy évszakos',
+                                        '4' => 'Egyéb',
+                                    ])
+                                    ->colors([
+                                        '1' => 'info',
+                                        '2' => 'info',
+                                        '3' => 'info',
+                                        '4' => 'warning',
+                                    ])
+                                    //->disabled(!auth()->user()->hasRole(['super_admin']))
+                                    ->default(1)
+                                    ->required(),
+                                ToggleButtons::make('structure')
+                                    ->label('Szerkezet')
+                                    ->helperText('Válassza ki az adott termék szerkezetét.')
+                                    ->inline()
+                                    // ->grouped()
+                                    ->options([
+                                        'R' => 'Radiál',
+                                        'D' => 'Diagonál',
+                                        'B' => 'Bias',
+                                    ])
+                                    ->colors([
+                                        'R' => 'info',
+                                        'D' => 'info',
+                                        'B' => 'info',
+                                    ])
+                                    //->disabled(!auth()->user()->hasRole(['super_admin']))
+                                    ->default('R')
+                                    ->required(),
+                                TextInput::make('width')
+                                    ->label('Szélesség')
+                                    ->helperText('Adja meg a termék szélességét.')
+                                    ->numeric()
+                                    ->required()
+                                    ->prefixIcon('tabler-ruler-3')
+                                    ->suffix('col'),
+                                TextInput::make('height')
+                                    ->label('Magasság')
+                                    ->helperText('Adja meg a termék magasságát.')
+                                    ->numeric()
+                                    ->required()
+                                    ->prefixIcon('tabler-ruler')
+                                    ->suffix('col'),
+                                TextInput::make('rim_diameter')
+                                    ->label('Felni átmérő')
+                                    ->helperText('Adja meg a termék felni átmérőjét.')
+                                    ->numeric()
+                                    ->required()
+                                    ->prefixIcon('tabler-restore')
+                                    ->suffix('col'),
+                            ])
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 12,
                             ]),
-
                     ]),
             ]);
     }
@@ -323,6 +367,29 @@ class ProductResource extends Resource
             ->emptyStateDescription('Az "Új termék" gombra kattintva rögzíthet új terméket a rendszerhez.')
             ->emptyStateIcon('tabler-database-search')
             ->columns([
+                TextColumn::make('width')
+                    ->label('Méret')
+                    ->formatStateUsing(function ($record) {
+                        return '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' . $record->width . '/' . $record->height . $record->structure . $record->rim_diameter . '</span></p>';
+                        //return $record->width . '/' . $record->height . $record->structure . $record->rim_diameter;
+                    })->html()
+                    ->searchable(['width', 'height', 'structure', 'rim_diameter'])
+                    ->description(function ($record): HtmlString {
+                        if ($record->description != null) {
+                            $text = $record->description;
+                            $wrapText = '...';
+                            $count = 40;
+                            if (strlen($record->description) > $count) {
+                                preg_match('/^.{0,' . $count . '}(?:.*?)\b/siu', $record->description, $matches);
+                                $text = $matches[0];
+                            } else {
+                                $wrapText = '';
+                            }
+                            return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $text . $wrapText . '</span>');
+                        } else {
+                            return new HtmlString('');
+                        }
+                    }),
                 ImageColumn::make('image_path')
                     ->label('Termékfotó')
                     //->square()
@@ -363,24 +430,7 @@ class ProductResource extends Resource
                             $query->where('name', 'like', "%{$search}%");
                         });
                     }),
-                TextColumn::make('width')
-                    ->label('Tulajdonságok')
-                    ->description(function ($record): HtmlString {
-                        if ($record->description != null) {
-                            $text = $record->description;
-                            $wrapText = '...';
-                            $count = 40;
-                            if (strlen($record->description) > $count) {
-                                preg_match('/^.{0,' . $count . '}(?:.*?)\b/siu', $record->description, $matches);
-                                $text = $matches[0];
-                            } else {
-                                $wrapText = '';
-                            }
-                            return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $text . $wrapText . '</span>');
-                        } else {
-                            return new HtmlString('');
-                        }
-                    }),
+
             ])
             ->filters([
                 //
@@ -398,6 +448,15 @@ class ProductResource extends Resource
             ]);
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ViewProduct::class,
+            Pages\EditProduct::class,
+            Pages\ManageProductProductprices::class,
+        ]);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -411,6 +470,8 @@ class ProductResource extends Resource
             'index' => Pages\ListProducts::route('/'),
             // 'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'view' => Pages\ViewProduct::route('/{record}'),
+            'productprices' => Pages\ManageProductProductprices::route('/{record}/productprices'),
         ];
     }
 

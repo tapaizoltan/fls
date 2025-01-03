@@ -140,26 +140,36 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                     ->addActionLabel('Termék hozzáadása')
                     ->relationship()
                     ->schema([
+                        // Select::make('product_id')
+                        //     ->label('Név')
+                        //     ->options(Product::all()->pluck('width', 'id'))
+                        //     ->searchable()
+                        //     ->required()
+                        //     ->reactive()
+                        //     ->afterStateUpdated(function ($state, callable $set) {
+                        //         $product = Product::find($state);
+                        //         if ($product) {
+                        //             $set('netprice', $product->netprice);
+                        //         } else {
+                        //             $set('netprice', null);
+                        //         }
+                        //     }),
+
+
+
                         Select::make('product_id')
-                            ->label('Név')
-                            ->options(Product::all()->pluck('name', 'id'))
-                            ->searchable()
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $product = Product::find($state);
-                                if ($product) {
-                                    $set('netprice', $product->netprice);
-                                } else {
-                                    $set('netprice', null);
-                                }
-                            }),
+                            ->label('Product')
+                            ->options(Product::getGroupedProducts()) // Ez adja vissza a csoportosított termékeket
+                            ->searchable() // Kereshetővé teszi a listát
+                            ->placeholder('Select a product') // Alapértelmezett szöveg
+                            ->required() // Kötelezővé teszi a mezőt
+                            ->reactive(), // Frissíti a form mezőit, ha változás történik
 
                         // Placeholder a netprice megjelenítésére
                         Placeholder::make('netprice')
                             ->label('Nettó ár')
                             //->content(fn($get) => $get('netprice') ?? 'N/A'),
-                            ->content(fn($get) => number_format($get('netprice'), 0, ",", ".").' Forint' ?? 'N/A'),
+                            ->content(fn($get) => number_format($get('netprice'), 0, ",", ".") . ' Forint' ?? 'N/A'),
                         Hidden::make('netprice'),
 
                         // Quantity mező
@@ -192,7 +202,7 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                                 $total = ($netprice * $quantity) - ($netprice * $quantity * $discount / 100);
 
                                 $set('net_total_price', $total);
-                                return number_format($total, 0, ",", ".").' Forint';
+                                return number_format($total, 0, ",", ".") . ' Forint';
                             })
                             ->reactive(),
 
@@ -232,8 +242,8 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                     ->searchable(),
                 TextColumn::make('offer_amount')
                     ->label('Ajánlat összege')
-                    ->formatStateUsing(function($state) {
-                        return number_format($state, 0, ",", ".").' Forint';
+                    ->formatStateUsing(function ($state) {
+                        return number_format($state, 0, ",", ".") . ' Forint';
                     })
                     ->searchable(),
                 TextColumn::make('user.name')
