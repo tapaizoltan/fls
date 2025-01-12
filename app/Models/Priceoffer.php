@@ -27,7 +27,7 @@ class Priceoffer extends Model
         }
         return 'PO-' . str_pad($nextNumber, 7, '0', STR_PAD_LEFT);
     }
-    
+
     public function sale()
     {
         return $this->belongsTo(Sale::class);
@@ -42,5 +42,4 @@ class Priceoffer extends Model
     {
         return $this->hasMany(Priceofferitem::class);
     }
-
 }

@@ -23,19 +23,19 @@ class ManageProductProductprices extends ManageRelatedRecords
 
     public static function getNavigationLabel(): string
     {
-        return 'Beszerzési ár';
+        return 'Árak';
     }
 
     public function getTitle(): string | Htmlable
     {
-        return 'Beszerzési ár szerkesztése';
+        return "Árak";
     }
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('beszerzesiarak')
+                Forms\Components\TextInput::make('árak')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -44,9 +44,9 @@ class ManageProductProductprices extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('beszerzesiarak')
+            ->recordTitleAttribute('árak')
             ->columns([
-                Tables\Columns\TextColumn::make('beszerzesiarak'),
+                Tables\Columns\TextColumn::make('árak'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()

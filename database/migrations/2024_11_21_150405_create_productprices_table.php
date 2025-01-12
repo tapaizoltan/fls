@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('product_id');
             $table->integer('net_purchase_price_eur')->nullable()->comment('netto beszerzési ár (euro)');
             $table->integer('net_purchase_price_huf')->nullable()->comment('netto beszerzési ár (forint)');
+            $table->integer('supplier_id')->nullable()->comment('beszállító');
             $table->integer('net_list_price_eur')->nullable()->comment('netto lista ár (euro)');
             $table->integer('net_list_price_huf')->nullable()->comment('netto lista ár (forint)');
             $table->integer('profit_margin')->nullable()->comment('haszonkulcs');

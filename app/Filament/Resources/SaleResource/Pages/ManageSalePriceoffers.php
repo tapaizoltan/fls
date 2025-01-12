@@ -22,6 +22,9 @@ use Filament\Forms\Components\Repeater;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Resources\SaleResource;
+use App\Models\Brand;
+use App\Models\Productmaincategory;
+use App\Models\Productsubcategory;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
@@ -110,7 +113,8 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                                         $total = 0;
 
                                         foreach ($items as $item) {
-                                            $netprice = $item['netprice'] ?? 0;
+                                            $netprice = 111;
+                                            //$netprice = $item['netprice'] ?? 0;
                                             $quantity = $item['quantity'] ?? 1;
                                             $discount = $item['discount'] ?? 0;
 
@@ -157,13 +161,87 @@ class ManageSalePriceoffers extends ManageRelatedRecords
 
 
 
+                        // Select::make('product_id')
+                        //     ->label('Product')
+                        //     ->options(Product::getGroupedProducts()) // Ez adja vissza a csoportosított termékeket
+                        //     ->searchable() // Kereshetővé teszi a listát
+                        //     ->placeholder('Select a product') // Alapértelmezett szöveg
+                        //     ->required() // Kötelezővé teszi a mezőt
+                        //     ->reactive(), // Frissíti a form mezőit, ha változás történik
+
+                        // Főkategória kiválasztása
+                        Select::make('productmaincategory_id')
+                            ->label('Főkategória')
+                            ->options(ProductMainCategory::pluck('name', 'id'))
+                            ->reactive()
+                            ->live()
+                            ->placeholder('Válassz főkategóriát')
+                            ->required(), // Kötelezővé tesszük
+
+                        // Alkategória kiválasztása
+                        Select::make('productsubcategory_id')
+                            ->label('Alkategória')
+                            ->options(function (callable $get) {
+                                $mainCategoryId = $get('productmaincategory_id');
+                                return $mainCategoryId
+                                    ? ProductSubCategory::where('productmaincategory_id', $mainCategoryId)->pluck('name', 'id')
+                                    : [];
+                            })
+                            ->reactive()
+                            ->live()
+                            ->hidden(fn(callable $get) => !$get('productmaincategory_id'))
+                            ->placeholder('Válassz alkategóriát')
+                            ->required(), // Kötelezővé tesszük
+
+                        // Márka kiválasztása
+                        Select::make('brand_id')
+                            ->label('Márka')
+                            ->options(function (callable $get) {
+                                $mainCategoryId = $get('productmaincategory_id');
+                                $subCategoryId = $get('productsubcategory_id');
+                                return ($mainCategoryId && $subCategoryId)
+                                    ? Brand::whereHas('products', function ($query) use ($mainCategoryId, $subCategoryId) {
+                                        $query->where('productmaincategory_id', $mainCategoryId)
+                                            ->where('productsubcategory_id', $subCategoryId);
+                                    })->pluck('name', 'id')
+                                    : [];
+                            })
+                            ->reactive()
+                            ->live()
+                            ->hidden(fn(callable $get) => !$get('productmaincategory_id') || !$get('productsubcategory_id'))
+                            ->placeholder('Válassz márkát')
+                            ->required(), // Kötelezővé tesszük
+
+                        // Termék kiválasztása
                         Select::make('product_id')
-                            ->label('Product')
-                            ->options(Product::getGroupedProducts()) // Ez adja vissza a csoportosított termékeket
-                            ->searchable() // Kereshetővé teszi a listát
-                            ->placeholder('Select a product') // Alapértelmezett szöveg
-                            ->required() // Kötelezővé teszi a mezőt
-                            ->reactive(), // Frissíti a form mezőit, ha változás történik
+                            ->label('Termék')
+                            ->options(function (callable $get) {
+                                $mainCategoryId = $get('productmaincategory_id');
+                                $subCategoryId = $get('productsubcategory_id');
+                                $brandId = $get('brand_id');
+                                return ($mainCategoryId && $subCategoryId && $brandId)
+                                    ? Product::where('productmaincategory_id', $mainCategoryId)
+                                    ->where('productsubcategory_id', $subCategoryId)
+                                    ->where('brand_id', $brandId)
+                                    ->get()
+                                    ->mapWithKeys(function ($product) {
+                                        return [
+                                            $product->id => sprintf(
+                                                '%d/%d%s%d',
+                                                $product->width,
+                                                $product->height,
+                                                strtoupper($product->structure),
+                                                $product->rim_diameter
+                                            ),
+                                        ];
+                                    })
+                                    : [];
+                            })
+                            ->reactive()
+                            ->live()
+                            ->hidden(fn(callable $get) => !$get('productmaincategory_id') || !$get('productsubcategory_id') || !$get('brand_id'))
+                            ->placeholder('Válassz terméket')
+                            ->required(), // Kötelezővé tesszük
 
                         // Placeholder a netprice megjelenítésére
                         Placeholder::make('netprice')
@@ -171,6 +249,7 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                             //->content(fn($get) => $get('netprice') ?? 'N/A'),
                             ->content(fn($get) => number_format($get('netprice'), 0, ",", ".") . ' Forint' ?? 'N/A'),
                         Hidden::make('netprice'),
+
 
                         // Quantity mező
                         TextInput::make('quantity')
