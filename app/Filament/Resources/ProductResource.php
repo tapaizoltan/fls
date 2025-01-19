@@ -155,7 +155,7 @@ class ProductResource extends Resource
                                 'md' => 6,
                                 'lg' => 6,
                                 'xl' => 6,
-                                '2xl' => 4,
+                                '2xl' => 6,
                             ]),
 
                         Section::make()
@@ -204,7 +204,7 @@ class ProductResource extends Resource
                                 'md' => 6,
                                 'lg' => 6,
                                 'xl' => 6,
-                                '2xl' => 4,
+                                '2xl' => 6,
                             ]),
 
                         Section::make()
@@ -263,7 +263,7 @@ class ProductResource extends Resource
                                 'md' => 6,
                                 'lg' => 6,
                                 'xl' => 6,
-                                '2xl' => 4,
+                                '2xl' => 6,
                             ]),
 
                         Section::make()
@@ -279,13 +279,13 @@ class ProductResource extends Resource
                                 'md' => 6,
                                 'lg' => 6,
                                 'xl' => 6,
-                                '2xl' => 4,
+                                '2xl' => 6,
                             ]),
                     ]),
 
                 Grid::make(12)
                     ->schema([
-                        Fieldset::make('Termék paraméterek')
+                        Fieldset::make('Termék alap paraméterek')
                             ->schema([
                                 ToggleButtons::make('season')
                                     ->label('Évszak')
@@ -305,8 +305,9 @@ class ProductResource extends Resource
                                         '4' => 'warning',
                                     ])
                                     //->disabled(!auth()->user()->hasRole(['super_admin']))
-                                    ->default(1)
-                                    ->required(),
+                                    //->required()
+                                    ->default(1),
+                                    
                                 ToggleButtons::make('structure')
                                     ->label('Szerkezet')
                                     ->helperText('Válassza ki az adott termék szerkezetét.')
@@ -323,8 +324,9 @@ class ProductResource extends Resource
                                         'B' => 'info',
                                     ])
                                     //->disabled(!auth()->user()->hasRole(['super_admin']))
-                                    ->default('R')
-                                    ->required(),
+                                    //->default('R')
+                                    //->required()
+                                    ,
                                 TextInput::make('width')
                                     ->label('Szélesség')
                                     ->helperText('Adja meg a termék szélességét.')
@@ -346,6 +348,81 @@ class ProductResource extends Resource
                                     ->required()
                                     ->prefixIcon('tabler-restore')
                                     ->suffix('col'),
+                            ])
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 12,
+                            ]),
+
+                        Fieldset::make('Termék bővített paraméterek')
+                            ->schema([
+                                TextInput::make('outer_diameter')
+                                    ->label('Külső átmérő')
+                                    ->helperText('Adja meg a termék külső átmérőjét.')
+                                    ->numeric()
+                                    ->prefixIcon('tabler-ruler-3')
+                                    ->suffix('cm'),
+                                TextInput::make('load_capacity')
+                                    ->label('Névleges teherbírás')
+                                    ->helperText('Adja meg a termék névleges teherbírását.')
+                                    ->numeric()
+                                    ->prefixIcon('tabler-weight')
+                                    ->suffix('col'),
+                                ToggleButtons::make('internal_structure')
+                                    ->label('Belső kialakítás')
+                                    ->helperText('Válassza ki az adott termék belső kialakítását.')
+                                    ->inline()
+                                    // ->grouped()
+                                    ->options([
+                                        '1' => 'Tömör',
+                                        '2' => 'Fujt',
+                                        '3' => 'Tömlővel és védőszalaggal',
+                                        '4' => 'Töltött',
+                                    ])
+                                    ->colors([
+                                        '1' => 'info',
+                                        '2' => 'info',
+                                        '3' => 'info',
+                                        '4' => 'info',
+                                    ])
+                                    //->disabled(!auth()->user()->hasRole(['super_admin']))
+                                    //->default(1),
+                                    ,
+                                ToggleButtons::make('color')
+                                    ->label('Szín')
+                                    ->helperText('Válassza ki az adott termék színét.')
+                                    ->inline()
+                                    // ->grouped()
+                                    ->options([
+                                        '1' => 'Normál',
+                                        '2' => 'Nyomot nem hagyó',
+                                    ])
+                                    ->colors([
+                                        '1' => 'info',
+                                        '2' => 'info',
+                                    ])
+                                    //->disabled(!auth()->user()->hasRole(['super_admin']))
+                                    //->default(1),
+                                    ,
+                                TextInput::make('pattern_code')
+                                    ->label('Mintázat kódja')
+                                    ->helperText('Adja meg a termék mintázatának kódját.')
+                                    ->prefixIcon('tabler-grid-4x4'),
+                                TextInput::make('pattern_depth')
+                                    ->label('Mintázat mélysége')
+                                    ->helperText('Adja meg a termék mintázatának mélységét.')
+                                    ->numeric()
+                                    ->prefixIcon('tabler-ruler-2')
+                                    ->suffix('mm'),
+                                Textarea::make('description')
+                                    ->label('Megjegyzés')
+                                    ->helperText('Itt rögzíthet néhány fontosnak ítélt információt a termékkel kapcsolatban.')
+                                    ->rows(10)
+                                    ->cols(20)
+                                    ->columnSpanFull(),
                             ])
                             ->columnSpan([
                                 'sm' => 12,

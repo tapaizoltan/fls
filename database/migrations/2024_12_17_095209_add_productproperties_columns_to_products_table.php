@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('rim_diameter' , length:5)->nullable()->comment('felni átmérő col')->after('structure');
             // Méret:Szélesség/Magasság+Gumi szerkezet+Felni átmérő
             $table->string('outer_diameter' , length:5)->nullable()->comment('külső átmérő cm')->after('rim_diameter');
-            $table->tinyInteger('load_capacity')->nullable()->comment('névleges teherbírás kg')->after('outer_diameter');
+            $table->integer('load_capacity')->nullable()->unsigned()->comment('névleges teherbírás kg')->after('outer_diameter');
             $table->tinyInteger('internal_structure')->nullable()->comment('0->tömör, 1->fújt, 2->tömlővel és védőszalaggal, 3->töltött')->after('load_capacity');
             $table->boolean('color')->nullable()->comment('0 normál, 1 nyomot nem hagyó')->after('internal_structure');
             $table->string('pattern_code', length:10)->nullable()->comment('mintázat kód')->after('color');
