@@ -14,4 +14,9 @@ class Supplier extends Model
     {
         return $this->hasMany(Brand::class);
     }
+
+    public function productprices()
+    {
+        return $this->hasMany(Productprice::class);
+    }
 }

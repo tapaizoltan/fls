@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Enums\PriceOffersStatus;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -42,4 +44,32 @@ class Priceoffer extends Model
     {
         return $this->hasMany(Priceofferitem::class);
     }
+
+    public function sendOfferEmail()
+    {
+        $sale = $this->sale; // Az ajánlathoz tartozó értékesítés
+        $customer = $sale->customer; // Az értékesítéshez tartozó ügyfél
+        $financialContact = $customer->contacts->where('financial_relationship', true)->first(); // Kapcsolattartó keresése
+
+        if (!$financialContact) {
+            throw new \Exception('Nem található pénzügyi kapcsolattartó az ügyfélhez.');
+        }
+
+        $email = $financialContact->email;
+
+        $subject = 'Zsolaka Kft - Árajánlat - ' . now()->format('YmdHi') . '-' . $sale->id . '-' . $this->id;
+
+        $content = view('emails.offer', [
+            'customerName' => $customer->name,
+            'offer' => $this,
+        ])->render();
+
+        Mail::send([], [], function ($message) use ($email, $subject, $content) {
+            $message->to($email)
+                ->subject($subject)
+                ->setBody($content, 'text/html');
+        });
+    }
+
+    
 }

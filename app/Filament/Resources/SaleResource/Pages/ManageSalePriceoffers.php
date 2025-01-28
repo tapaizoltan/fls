@@ -5,15 +5,23 @@ namespace App\Filament\Resources\SaleResource\Pages;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Brand;
 use Filament\Actions;
 use Nette\Utils\Html;
 use App\Models\Product;
 use Filament\Forms\Form;
 use App\Models\Priceoffer;
 use Filament\Tables\Table;
+use App\Mail\OfferSentMail;
+use App\Jobs\SendOfferEmail;
 use App\Enums\PriceOffersStatus;
+use App\Models\Productsubcategory;
 use Filament\Actions\DeleteAction;
 use Illuminate\Support\HtmlString;
+use App\Models\Productmaincategory;
+use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
@@ -22,13 +30,10 @@ use Filament\Forms\Components\Repeater;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use App\Filament\Resources\SaleResource;
-use App\Models\Brand;
-use App\Models\Productmaincategory;
-use App\Models\Productsubcategory;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Contracts\Support\Htmlable;
@@ -113,8 +118,8 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                                         $total = 0;
 
                                         foreach ($items as $item) {
-                                            $netprice = 111;
-                                            //$netprice = $item['netprice'] ?? 0;
+                                            //$netprice = 111;
+                                            $netprice = $item['netprice'] ?? 0;
                                             $quantity = $item['quantity'] ?? 1;
                                             $discount = $item['discount'] ?? 0;
 
@@ -144,30 +149,6 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                     ->addActionLabel('Termék hozzáadása')
                     ->relationship()
                     ->schema([
-                        // Select::make('product_id')
-                        //     ->label('Név')
-                        //     ->options(Product::all()->pluck('width', 'id'))
-                        //     ->searchable()
-                        //     ->required()
-                        //     ->reactive()
-                        //     ->afterStateUpdated(function ($state, callable $set) {
-                        //         $product = Product::find($state);
-                        //         if ($product) {
-                        //             $set('netprice', $product->netprice);
-                        //         } else {
-                        //             $set('netprice', null);
-                        //         }
-                        //     }),
-
-
-
-                        // Select::make('product_id')
-                        //     ->label('Product')
-                        //     ->options(Product::getGroupedProducts()) // Ez adja vissza a csoportosított termékeket
-                        //     ->searchable() // Kereshetővé teszi a listát
-                        //     ->placeholder('Select a product') // Alapértelmezett szöveg
-                        //     ->required() // Kötelezővé teszi a mezőt
-                        //     ->reactive(), // Frissíti a form mezőit, ha változás történik
 
                         // Főkategória kiválasztása
                         Select::make('productmaincategory_id')
@@ -238,16 +219,28 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                                     : [];
                             })
                             ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $latestPrice = Product::find($state)?->productprices()
+                                    ->latest('created_at')
+                                    ->first();
+
+                                if ($latestPrice) {
+                                    $set('netprice', $latestPrice->net_list_price_huf);
+                                } else {
+                                    $set('netprice', null);
+                                }
+                            })
                             ->live()
                             ->hidden(fn(callable $get) => !$get('productmaincategory_id') || !$get('productsubcategory_id') || !$get('brand_id'))
                             ->placeholder('Válassz terméket')
+
                             ->required(), // Kötelezővé tesszük
 
                         // Placeholder a netprice megjelenítésére
                         Placeholder::make('netprice')
                             ->label('Nettó ár')
                             //->content(fn($get) => $get('netprice') ?? 'N/A'),
-                            ->content(fn($get) => number_format($get('netprice'), 0, ",", ".") . ' Forint' ?? 'N/A'),
+                            ->content(fn($get) => $get('netprice') ? number_format($get('netprice'), 0, ',', '.') . ' Ft' : 'N/A'),
                         Hidden::make('netprice'),
 
 
@@ -347,7 +340,42 @@ class ManageSalePriceoffers extends ManageRelatedRecords
 
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
-                ])
+                ]),
+                Action::make('sendOffer')
+                    //->label('Ajánlat küldése')
+                    ->label(false)
+                    ->action(function (Priceoffer $record) {
+                        $offer = $record;
+
+                        // Az ajánlat sale-hez tartozó ügyfél adatainak lekérése
+                        $sale = $offer->sale;
+                        $customer = $sale->customer;
+
+                        // Az ügyfél pénzügyi kapcsolattartójának lekérése
+                        $financialContact = $customer->contacts()
+                            ->where('financial_relationship', true)
+                            ->first();
+
+                        if (!$financialContact) {
+                            Notification::make()
+                                ->title('Nincs pénzügyi kapcsolattartó')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $customerEmail = $financialContact->email;
+                        $customerName = $customer->name;
+
+                        // A job elindítása a globális dispatch() függvénnyel
+                        dispatch(new SendOfferEmail($offer, $customerEmail, $customerName));
+
+                        Notification::make()
+                            ->title('Ajánlat bekerült a várólistára!')
+                            ->success()
+                            ->send();
+                    })
+                    ->icon('tabler-mail-forward'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
