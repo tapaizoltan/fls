@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->validateCsrfTokens(except: [
+            'api/process-card',
+            //'http://example.com/foo/bar',
+
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
