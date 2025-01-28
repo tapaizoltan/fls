@@ -377,9 +377,9 @@ class ManageCustomerAddresses extends ManageRelatedRecords
                             }
                         }
                         if ($record->address != null) {
-                            $address = ', ' . $record->address . ' ' . $areatype_name->name . ' ' . $record->address_number . '.';
+                            $address = ', ' . $record?->address . ' ' . $areatype_name?->name . ' ' . $record?->address_number . '.';
                         }
-                        return $record->zip_code . ' ' . $record->settlement . $address;
+                        return $record?->zip_code . ' ' . $record?->settlement . $address;
                     })
                     ->searchable(['zip_code', 'settlement', 'address', 'parcel_number'])
                     ->description(function ($record,) {
