@@ -62,11 +62,19 @@ class ManageCustomerContacts extends ManageRelatedRecords
                         '0' => 'info',
                         '1' => 'info',
                     ])
-                    ->default(0),
+                    ->default(0)
+                    ->columnSpanFull(),
                 Toggle::make('financial_relationship')
                     ->inline(false)
                     ->label('Pénzügyi kapcsolattartó')
                     ->helperText('Ezt bekapcsolja akkor az adott kapcsolat hivatott financiális kérdésekkel kapcsolatban.')
+                    ->onIcon('tabler-check')
+                    ->offIcon('tabler-x')
+                    ->default(0),
+                Toggle::make('get_offer')
+                    ->inline(false)
+                    ->label('Kaphat ajánlatot')
+                    ->helperText('Ezt bekapcsolja akkor az adott kapcsolat kaphat ajánlatokat a rendszertől.')
                     ->onIcon('tabler-check')
                     ->offIcon('tabler-x')
                     ->default(0),
@@ -179,6 +187,17 @@ class ManageCustomerContacts extends ManageRelatedRecords
                     ->searchable(),
                 IconColumn::make('financial_relationship')
                     ->label('Pénzügyi kapcsolattartó')
+                    ->icon(fn(string $state): string => match ($state) {
+                        '0' => '',
+                        '1' => 'tabler-circle-check',
+                    })
+                    ->color(fn(string $state): string => match ($state) {
+                        '0' => '',
+                        '1' => 'success',
+                    })
+                    ->size(IconColumn\IconColumnSize::Medium),
+                IconColumn::make('get_offer')
+                    ->label('Kaphat ajánlatot')
                     ->icon(fn(string $state): string => match ($state) {
                         '0' => '',
                         '1' => 'tabler-circle-check',
