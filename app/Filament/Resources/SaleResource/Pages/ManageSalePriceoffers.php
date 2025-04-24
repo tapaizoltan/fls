@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use App\Mail\OfferSentMail;
 use App\Jobs\SendOfferEmail;
 use App\Enums\PriceOffersStatus;
+use App\Models\Contact;
 use App\Models\Productsubcategory;
 use Filament\Actions\DeleteAction;
 use Illuminate\Support\HtmlString;
@@ -342,40 +343,60 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                     Tables\Actions\RestoreAction::make(),
                 ]),
                 Action::make('sendOffer')
-                    //->label('Ajánlat küldése')
-                    ->label(false)
-                    ->action(function (Priceoffer $record) {
-                        $offer = $record;
+                    ->label('Ajánlat küldése')
+                    ->icon('tabler-mail-forward')
 
-                        // Az ajánlat sale-hez tartozó ügyfél adatainak lekérése
-                        $sale = $offer->sale;
-                        $customer = $sale->customer;
+                    // 1) Modal‑űrlap a kapcsolattartók listájával
+                    ->form(function (Priceoffer $record) {
+                        $customer = $record->sale->customer;
 
-                        // Az ügyfél pénzügyi kapcsolattartójának lekérése
-                        $financialContact = $customer->contacts()
-                            ->where('financial_relationship', true)
-                            ->first();
+                        $options = $customer->contacts()
+                            ->where('get_offer', true)
+                            ->selectRaw("id, CONCAT_WS(' ', lastname, firstname, NULLIF(second_firstname, '')) AS full_name")
+                            ->pluck('full_name', 'id');
 
-                        if (!$financialContact) {
+                        return [
+                            Select::make('contact_id')
+                                ->label('Kapcsolattartó választása')
+                                ->options($options)
+                                ->searchable()
+                                ->required()
+                                ->placeholder('Válassz kapcsolattartót'),
+                        ];
+                    })
+
+                    // 2) Letiltjuk a gombot, ha nincs címzett
+                    ->disabled(
+                        fn(Priceoffer $record) =>
+                        $record->sale->customer
+                            ->contacts()
+                            ->where('get_offer', true)
+                            ->doesntExist()
+                    )
+
+                    // 3) Submit logika
+                    ->action(function (array $data, Priceoffer $record) {
+                        $contact = Contact::find($data['contact_id']);
+
+                        if (! $contact) {
                             Notification::make()
-                                ->title('Nincs pénzügyi kapcsolattartó')
+                                ->title('A kiválasztott kapcsolattartó nem található.')
                                 ->danger()
                                 ->send();
                             return;
                         }
 
-                        $customerEmail = $financialContact->email;
-                        $customerName = $customer->name;
-
-                        // A job elindítása a globális dispatch() függvénnyel
-                        dispatch(new SendOfferEmail($offer, $customerEmail, $customerName));
+                        dispatch(new SendOfferEmail(
+                            $record,
+                            $contact->email,
+                            $contact->name,
+                        ));
 
                         Notification::make()
-                            ->title('Ajánlat bekerült a várólistára!')
+                            ->title("Ajánlat elküldve {$contact->name} részére!")
                             ->success()
                             ->send();
-                    })
-                    ->icon('tabler-mail-forward'),
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
