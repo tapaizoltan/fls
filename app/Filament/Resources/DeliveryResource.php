@@ -2,27 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DeliveryResource\Pages;
-use App\Filament\Resources\DeliveryResource\RelationManagers;
-use App\Models\Delivery;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Delivery;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\DeliveryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\DeliveryResource\RelationManagers;
 
 class DeliveryResource extends Resource
 {
     protected static ?string $model = Delivery::class;
 
-    protected static ?string $navigationGroup = 'Értékesítés';
-    // protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?string $navigationGroup = 'Kiszállítás';
 
     protected static ?string $modelLabel = 'kiszállítás';
     protected static ?string $pluralModelLabel = 'kiszállítások';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -36,21 +36,23 @@ class DeliveryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('title')->label('Ajánlat címe')->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label('Létrehozva')->dateTime(),
+                TextColumn::make('price_offer_id')->label('Azonosító'),
+                TextColumn::make('title')->label('Ajánlat címe')->searchable(),
+                TextColumn::make('created_at')->label('Létrehozva')->dateTime()->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                /*
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                */
             ]);
     }
 
@@ -68,5 +70,13 @@ class DeliveryResource extends Resource
             'create' => Pages\CreateDelivery::route('/create'),
             'edit' => Pages\EditDelivery::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi ügyfél van már rögzítve
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::all()->count();
     }
 }

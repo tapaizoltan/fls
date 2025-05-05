@@ -75,6 +75,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([NavigationGroup::make()->label('Beszállítás')->icon('tabler-truck-return')])
             ->navigationGroups([NavigationGroup::make()->label('Értékesítés')->icon('tabler-discount-check')])
+            ->navigationGroups([NavigationGroup::make()->label('Kiszállítás')->icon('tabler-truck-delivery')])
             ->navigationGroups([NavigationGroup::make()->label('Termékek')->icon('tabler-loader-3')])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->maxContentWidth(\Filament\Support\Enums\MaxWidth::Full);
