@@ -12,6 +12,8 @@ enum PriceOffersStatus: int implements HasColor, HasIcon, HasLabel
     case Pending = 2; //függőben lévő
     case SuccessfulPriceOffer = 3; //sikeres ajánlat
     case UnsuccessfulPriceOffer = 4; //sikertelen ajánlat
+    case UnderDelivery = 5; //kiszállítás alatt
+    case Delivered = 6; // kiszállítva
 
     public function getLabel(): string
     {
@@ -20,6 +22,8 @@ enum PriceOffersStatus: int implements HasColor, HasIcon, HasLabel
             self::Pending => 'Függőben lévő',
             self::SuccessfulPriceOffer => 'Sikeres ajánlat',
             self::UnsuccessfulPriceOffer => 'Sikertelen ajánlat',
+            self::UnderDelivery => 'Kiszállítás alatt',
+            self::Delivered => 'Kiszállítva',
         };
     }
 
@@ -30,6 +34,8 @@ enum PriceOffersStatus: int implements HasColor, HasIcon, HasLabel
             self::Pending => 'info',
             self::SuccessfulPriceOffer => 'success',
             self::UnsuccessfulPriceOffer => 'danger',
+            self::UnderDelivery => 'success',
+            self::Delivered => 'success',
         };
     }
 
@@ -40,6 +46,8 @@ enum PriceOffersStatus: int implements HasColor, HasIcon, HasLabel
             self::Pending => 'tabler-ping-pong',
             self::SuccessfulPriceOffer => 'tabler-thumb-up',
             self::UnsuccessfulPriceOffer => 'tabler-thumb-down',
+            self::UnderDelivery => 'tabler-truck-delivery',
+            self::Delivered => 'tabler-truck-loading',
         };
     }
 }

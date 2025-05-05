@@ -8,14 +8,15 @@ use Filament\Tables;
 use App\Models\Brand;
 use Filament\Actions;
 use Nette\Utils\Html;
+use App\Models\Contact;
 use App\Models\Product;
 use Filament\Forms\Form;
 use App\Models\Priceoffer;
 use Filament\Tables\Table;
 use App\Mail\OfferSentMail;
 use App\Jobs\SendOfferEmail;
+use App\Mail\PriceOfferMail;
 use App\Enums\PriceOffersStatus;
-use App\Models\Contact;
 use App\Models\Productsubcategory;
 use Filament\Actions\DeleteAction;
 use Illuminate\Support\HtmlString;
@@ -36,6 +37,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Contracts\Support\Htmlable;
 use Filament\Forms\Components\ToggleButtons;
@@ -342,6 +344,7 @@ class ManageSalePriceoffers extends ManageRelatedRecords
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                 ]),
+                /*
                 Action::make('sendOffer')
                     ->label('Ajánlat küldése')
                     ->icon('tabler-mail-forward')
@@ -394,6 +397,72 @@ class ManageSalePriceoffers extends ManageRelatedRecords
 
                         Notification::make()
                             ->title("Ajánlat elküldve {$contact->name} részére!")
+                            ->success()
+                            ->send();
+                    }),*/
+                Action::make('sendOffer')
+                    ->label('Ajánlat küldése')
+                    ->icon('tabler-mail-forward')
+
+                    // 1) Modal‑űrlap a kapcsolattartók listájával
+                    ->form(function (Priceoffer $record) {
+                        $customer = $record->sale->customer;
+
+                        $options = $customer->contacts()
+                            ->where('get_offer', true)
+                            ->select('id', 'firstname', 'second_firstname', 'lastname')
+                            ->get()
+                            ->mapWithKeys(function ($contact) {
+                                $fullName = trim("{$contact->lastname} {$contact->firstname}" .
+                                    ($contact->second_firstname ? ' ' . $contact->second_firstname : ''));
+                                return [$contact->id => $fullName];
+                            });
+
+                        return [
+                            Select::make('contact_ids')
+                                ->multiple()
+                                ->label('Kapcsolattartók kiválasztása')
+                                ->options($options)
+                                ->searchable()
+                                ->required()
+                                ->placeholder('Válassz egy vagy több kapcsolattartót'),
+                        ];
+                    })
+
+                    // 2) Letiltjuk a gombot, ha nincs címzett
+                    ->disabled(
+                        fn(Priceoffer $record) =>
+                        $record->sale->customer
+                            ->contacts()
+                            ->where('get_offer', true)
+                            ->doesntExist()
+                    )
+
+                    // 3) Submit logika
+                    ->action(function (array $data, Priceoffer $record) {
+                        $contacts = Contact::whereIn('id', $data['contact_ids'])->get();
+
+                        if ($contacts->isEmpty()) {
+                            Notification::make()
+                                ->title('Nem található egyik kiválasztott kapcsolattartó sem.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        foreach ($contacts as $contact) {
+                            $fullName = trim("{$contact->lastname} {$contact->firstname}" .
+                                ($contact->second_firstname ? ' ' . $contact->second_firstname : ''));
+
+                            dispatch(new SendOfferEmail(
+                                $record,
+                                $contact->email,
+                                $fullName,
+                            ));
+                        }
+
+                        Notification::make()
+                            ->title('Ajánlat(ok) elküldve a kiválasztott kapcsolattartók részére!')
                             ->success()
                             ->send();
                     }),
