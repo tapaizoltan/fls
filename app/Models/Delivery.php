@@ -20,4 +20,24 @@ class Delivery extends Model
             $query->where('status', 5);
         });
     }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function priceOffers()
+    {
+        return $this->hasMany(Priceoffer::class);
+    }
 }
