@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Delivery;
@@ -53,13 +54,24 @@ class DeliveryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->heading('Kiszállítási folyamatok.')
+            ->description('Ebben a modulban kezelheti a kiszállításait.')
+            ->emptyStateHeading('Nincs megjeleníthető kiszállítási folyamat vagy esemény.')
+            ->emptyStateIcon('tabler-database-search')
             ->columns([
-                TextColumn::make('price_offer_id')->label('Azonosító'),
+                TextColumn::make('created_at')
+                    ->label('Dátum')
+                    ->formatStateUsing(function ($state) {
+                        return Carbon::parse($state)->translatedFormat('Y F d. l');
+                    })
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('price_offer_id')
+                ->label('Azonosító'),
                 TextColumn::make('sale.customer.name')
                 ->label('Cég neve')
                 ->sortable()
                 ->searchable(),
-                TextColumn::make('created_at')->label('Létrehozva')->dateTime()->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
