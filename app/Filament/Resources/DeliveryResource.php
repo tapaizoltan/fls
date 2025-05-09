@@ -4,12 +4,17 @@ namespace App\Filament\Resources;
 
 use Carbon\Carbon;
 use Filament\Forms;
+
 use Filament\Tables;
 use App\Models\Delivery;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use App\Models\Contact;
+use App\Models\Product;
+use App\Models\Productsubcategory;
 use Illuminate\Support\HtmlString;
+use App\Models\Productmaincategory;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -17,6 +22,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
@@ -28,14 +34,19 @@ use Coolsam\SignaturePad\Forms\Components\Fields\SignaturePad;
 
 class DeliveryResource extends Resource
 {
-    protected static ?string $model = Delivery::class;
+    //protected static ?string $model = Delivery::class;
 
     protected static ?string $navigationGroup = 'Kiszállítás';
 
     protected static ?string $modelLabel = 'kiszállítás';
     protected static ?string $pluralModelLabel = 'kiszállítások';
     protected static ?int $navigationSort = 1;
-
+    protected static ?string $model = \App\Models\Priceoffer::class;
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('status', 5);
+    }
+    /*
     public static function form(Form $form): Form
     {
         return $form
@@ -49,6 +60,50 @@ class DeliveryResource extends Resource
             ->strokeDotSize(2.0) // set the stroke dot size.
             ->hideDownloadButtons() // In case you don't want to show the download buttons on the pad, you can hide them by setting this option.
         ]);
+
+    }
+        */
+
+    public static function form(Form $form): Form
+    {
+        return $form
+        ->schema([
+            Repeater::make('priceofferitems')
+                ->label('Ajánlat tételek')
+                ->relationship('priceofferitems') // Ez mondja meg, hogy a modelnek van ilyen kapcsolata
+                ->schema([
+                    TextInput::make('name')
+                        ->label('Megnevezés')
+                        ->disabled(),
+
+                    TextInput::make('quantity')
+                        ->label('Mennyiség')
+                        ->disabled(),
+
+                    TextInput::make('price')
+                        ->label('Ár')
+                        ->disabled(),
+                ])
+                ->columns(3)
+                ->disableItemCreation()
+                ->disableItemDeletion()
+                ->disableItemMovement(),
+
+                SignaturePad::make('signature')
+                ->backgroundColor('black') // Set the background color in case you want to download to jpeg
+                ->penColor('blue') // Set the pen color
+                ->strokeMinDistance(2.0) // set the minimum stroke distance (the default works fine)
+                ->strokeMaxWidth(2.5) // set the max width of the pen stroke
+                ->strokeMinWidth(1.0) // set the minimum width of the pen stroke
+                ->strokeDotSize(2.0) // set the stroke dot size.
+                ->hideDownloadButtons() // In case you don't want to show the download buttons on the pad, you can hide them by setting this option.
+        ]);
+    }
+
+    public static function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['status'] = 6;
+        return $data;
     }
 
     public static function table(Table $table): Table
@@ -81,13 +136,9 @@ class DeliveryResource extends Resource
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                /*
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-                */
             ]);
     }
+    
 
     public static function getRelations(): array
     {

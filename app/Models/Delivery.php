@@ -6,6 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Delivery extends Model
 {
+    public function priceofferitems()
+{
+    return $this->hasManyThrough(
+        Priceofferitem::class,
+        Priceoffer::class,
+        'id',              // local key on Delivery (vagy Priceoffer.id)
+        'priceoffer_id',   // foreign key on Priceofferitem
+        'id',              // local key on Delivery (vagy Priceoffer.id)
+        'id'               // local key on Priceoffer
+    );
+}
+
     protected $table = 'priceoffers'; // ugyanazt a táblát használja
 
     // Nem akarunk új rekordokat létrehozni, csak olvasni
@@ -40,4 +52,11 @@ class Delivery extends Model
     {
         return $this->hasMany(Priceoffer::class);
     }
+
+    /*
+    public function priceofferitems()
+    {
+        return $this->hasMany(Priceofferitem::class);
+    }
+        */
 }
