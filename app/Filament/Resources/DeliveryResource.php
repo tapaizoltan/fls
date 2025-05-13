@@ -69,22 +69,23 @@ class DeliveryResource extends Resource
         return $form
         ->schema([
             Repeater::make('priceofferitems')
-                ->label('Ajánlat tételek')
-                ->relationship('priceofferitems') // Ez mondja meg, hogy a modelnek van ilyen kapcsolata
+                ->relationship('priceofferitems')
                 ->schema([
-                    TextInput::make('name')
-                        ->label('Megnevezés')
-                        ->disabled(),
+                    Placeholder::make('product_name')
+                    ->label('Termék')
+                    /*->content(fn ($record) => $record->product?->description ?? '-'),*/
+                    ->content(fn ($record) => $record->product?->width . '/' . $record->product?->height . $record->product?->structure . $record->product?->rim_diameter ?? '-'),
+                    /*->formatStateUsing(function ($record) {
+                        return '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' . $record->width . '/' . $record->height . $record->structure . $record->rim_diameter . '</span></p>';
+                        //return $record->width . '/' . $record->height . $record->structure . $record->rim_diameter;
+                    }),*/
 
                     TextInput::make('quantity')
                         ->label('Mennyiség')
-                        ->disabled(),
-
-                    TextInput::make('price')
-                        ->label('Ár')
-                        ->disabled(),
+                        ->disabled()
+                        ->dehydrated(false),
                 ])
-                ->columns(3)
+                ->columns(2)
                 ->disableItemCreation()
                 ->disableItemDeletion()
                 ->disableItemMovement(),
