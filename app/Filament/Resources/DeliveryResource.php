@@ -98,6 +98,7 @@ class DeliveryResource extends Resource
                 ->strokeMinWidth(1.0) // set the minimum width of the pen stroke
                 ->strokeDotSize(2.0) // set the stroke dot size.
                 ->hideDownloadButtons() // In case you don't want to show the download buttons on the pad, you can hide them by setting this option.
+                ->required(),
         ]);
     }
 
