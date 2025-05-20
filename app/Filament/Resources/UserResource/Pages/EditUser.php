@@ -16,7 +16,7 @@ class EditUser extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-    protected function mutateFormDataBeforeCreate(array $data): array
+    protected function mutateFormDataBeforeSave(array $data): array
     {
         unset($data['password_confirmation']);
         return $data;
