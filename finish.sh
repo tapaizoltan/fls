@@ -9,7 +9,7 @@ db_host=mysql
 db_port=3306
 db_database=fls
 db_username=root
-db_password=root
+db_password=XMtepb3Ftbrf
 
 clear
 
