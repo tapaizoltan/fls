@@ -40,4 +40,13 @@ class Customer extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    protected static function booted()
+    {
+        static::updating(function ($customer) {
+            if ($customer->isDirty('reseller') && $customer->reseller == 0) {
+                $customer->order_clerk = null;
+            }
+        });
+    }
 }

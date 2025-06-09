@@ -127,6 +127,7 @@ class CustomerResource extends Resource
                                         ->minLength(3)
                                         ->maxLength(255)
                                         ->hidden(fn (Get $get): bool => ($get('reseller')!='1'))
+                                        ->required(fn (Get $get): bool => ($get('reseller')=='1'))
                                         ->columnSpanFull(),
 
                                     ])->columns([
