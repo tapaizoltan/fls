@@ -26,15 +26,17 @@ use Filament\Forms\Components\Group;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Livewire;
 
+use Filament\Forms\Components\Livewire;
 use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\Card;
 use Filament\Infolists\Components\View;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Spatie\Activitylog\Models\Activity;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Split;
 use Filament\Notifications\Notification;
@@ -42,6 +44,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Pages\SubNavigationPosition;
+use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Forms\Components\Placeholder;
@@ -51,12 +54,10 @@ use App\Filament\Resources\CustomerResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Components\Grid as InfolistsGrid;
 use Filament\Resources\RelationManagers\RelationManager;
+// use App\Filament\Resources\CustomerResource\Pages\ManageCustomerSaleevents;
 use Filament\Infolists\Components\Group as InfolistsGroup;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use Filament\Infolists\Components\Section as InfolistsSection;
-// use App\Filament\Resources\CustomerResource\Pages\ManageCustomerSaleevents;
-use Filament\Resources\Pages\ListRecords;
-use Spatie\Activitylog\Models\Activity;
 
 class CustomerResource extends Resource
 {
@@ -77,6 +78,7 @@ class CustomerResource extends Resource
                     ->schema([
                         Section::make()
                             ->schema([
+
                                 TextInput::make('name')
                                     ->label('Ügyfél neve')
                                     ->helperText('Adja meg az ügyfél nevét.')
@@ -105,6 +107,35 @@ class CustomerResource extends Resource
                                     ->required()
                                     ->minLength(3)
                                     ->maxLength(255),
+
+                                Toggle::make('reseller')
+                                    ->onIcon('heroicon-m-bolt')
+                                    ->offIcon('heroicon-m-user')
+                                    ->label('Ügyintézőn keresztüli ügyfél')
+                                    ->helperText('Jelölje be, ha az ügyfél nem direktben, hanem egy ügyintézőn keresztül vásárol.')
+                                    ->default(false)
+                                    ->live()
+                                    ->columnSpanFull(),
+
+                                    Fieldset::make('Ügyintézői információk')
+                                    ->hidden(fn (Get $get): bool => ($get('reseller')!='1'))
+                                    ->schema([
+                                        TextInput::make('order_clerk')
+                                        ->label('Megrendelő ügyintézője')
+                                        ->helperText('Adja meg az ügyfél ügyintézőjének nevét.')
+                                        ->prefixIcon('tabler-writing-sign')
+                                        ->minLength(3)
+                                        ->maxLength(255)
+                                        ->hidden(fn (Get $get): bool => ($get('reseller')!='1'))
+                                        ->columnSpanFull(),
+
+                                    ])->columns([
+                                        'sm' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                        'xl' => 1,
+                                        '2xl' => 1,
+                                    ]),
 
 
                                 Fieldset::make('Ügyfél információk')
@@ -235,6 +266,13 @@ class CustomerResource extends Resource
                         }
                     })
                     ->searchable(['name', 'description']),
+                TextColumn::make('order_clerk')
+                    ->label('Ügyintéző')
+                    ->badge()
+                    ->searchable(['order_clerk'])
+                    ->formatStateUsing(function ($state): HtmlString {
+                        return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $state . '</span>');
+                    }),
                 TextColumn::make('industrytypes.name')
                     ->label('Iparág')
                     ->badge()
