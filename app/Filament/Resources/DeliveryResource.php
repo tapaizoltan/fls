@@ -129,6 +129,15 @@ class DeliveryResource extends Resource
                 ->label('Cég neve')
                 ->sortable()
                 ->searchable(),
+                TextColumn::make('sale.customer.order_clerk')
+                ->label('Ügyintéző')
+                ->sortable()
+                ->searchable()
+                ->label('Ügyintéző')
+                ->badge()
+                ->formatStateUsing(function ($state): HtmlString {
+                    return new HtmlString('<span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">' . $state . '</span>');
+                }),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -158,11 +167,10 @@ class DeliveryResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi ügyfél van már rögzítve
+    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi item van már rögzítve
     {
         /** @var class-string<Model> $modelClass */
         $modelClass = static::$model;
-
-        return (string) $modelClass::all()->count();
+        return (string) $modelClass::where('status', 5)->count();
     }
 }
