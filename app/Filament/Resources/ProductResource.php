@@ -22,6 +22,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -501,14 +502,20 @@ class ProductResource extends Resource
             ->emptyStateDescription('Az "Új termék, szolgáltatás" gombra kattintva rögzíthet új terméket vagy szolgáltatást a rendszerhez.')
             ->emptyStateIcon('tabler-database-search')
             ->columns([
+                IconColumn::make('type_icon')
+                    ->label('Típus')
+                    ->size('lg')
+                    ->icon(fn ($record) => $record->service_name ? 'heroicon-o-wrench' : 'tabler-loader-3')
+                    ->tooltip(fn ($record) => $record->service_name ? 'Szolgáltatás' : 'Termék')
+                    ->color(fn ($record) => $record->service_name ? 'warning' : 'info'),
                 TextColumn::make('id')
                     ->label('Megnevezés')
                     ->formatStateUsing(function ($record) {
-                        if ($record->servvice_name == null) {
+                        if ($record->service_name == null) {
                             $output = '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' .  $record->width . '/' . $record->height . $record->structure . $record->rim_diameter . '</span></p>';
                         }
-                        if ($record->servvice_name != null) {
-                            $output = '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' .  $record->service_name . '</span></p>';
+                        if ($record->service_name != null) {
+                            $output = '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; ">' .  $record->service_name . '</span></p>';
                         }
                         return $output;
                         })->html()
