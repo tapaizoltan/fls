@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Brand;
 use App\Models\Product;
+use Filament\Forms\Get;
 use App\Models\Supplier;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -285,6 +286,62 @@ class ProductResource extends Resource
 
                 Grid::make(12)
                     ->schema([
+                        Section::make()
+                            ->schema([
+                                ToggleButtons::make('prod_or_serv')
+                                    ->helperText('Válassza ki, hogy a rögzített termék vagy szolgáltatás.')
+                                    ->label('Termék vagy szolgáltatás?')
+                                    ->inline()
+                                    ->live()
+                                    ->required()
+                                    ->options([
+                                        '0' => 'Termék',
+                                        '1' => 'Szolgáltatás',
+                                    ])
+                                    ->colors([
+                                        '0' => 'info',
+                                        '1' => 'info',
+                                    ])
+                                    ->dehydrated(false)
+                                    ->default(0),
+                            ])->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 12,
+                            ]),
+                    ]),
+
+                Grid::make(12)
+                    ->hidden(fn (Get $get): bool => ($get('prod_or_serv')!='1'))
+                    ->schema([
+                        Fieldset::make('Szolgáltatás alap paraméterek')
+                            ->schema([
+                                TextInput::make('service_name')
+                                    ->label('Szolgáltatás neve')
+                                    ->helperText('Adja meg a szolgáltatás nevét.')
+                                    ->requiredIf('prod_or_serv', '1')
+                                    ->prefixIcon('tabler-briefcase'),
+                                Textarea::make('description')
+                                    ->label('Megjegyzés')
+                                    ->helperText('Itt rögzíthet néhány fontosnak ítélt információt a szolgáltatással kapcsolatban.')
+                                    ->rows(10)
+                                    ->cols(20)
+                                    ->columnSpanFull(),
+                            ])
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 12,
+                            ]),
+                    ]),
+
+                Grid::make(12)
+                    ->hidden(fn (Get $get): bool => ($get('prod_or_serv')!='0'))
+                    ->schema([
                         Fieldset::make('Termék alap paraméterek')
                             ->schema([
                                 ToggleButtons::make('season')
@@ -331,21 +388,21 @@ class ProductResource extends Resource
                                     ->label('Szélesség')
                                     ->helperText('Adja meg a termék szélességét.')
                                     ->numeric()
-                                    ->required()
+                                    ->requiredIf('prod_or_serv', '0')
                                     ->prefixIcon('tabler-ruler-3')
                                     ->suffix('col'),
                                 TextInput::make('height')
                                     ->label('Magasság')
                                     ->helperText('Adja meg a termék magasságát.')
                                     ->numeric()
-                                    ->required()
+                                    ->requiredIf('prod_or_serv', '0')
                                     ->prefixIcon('tabler-ruler')
                                     ->suffix('col'),
                                 TextInput::make('rim_diameter')
                                     ->label('Felni átmérő')
                                     ->helperText('Adja meg a termék felni átmérőjét.')
                                     ->numeric()
-                                    ->required()
+                                    ->requiredIf('prod_or_serv', '0')
                                     ->prefixIcon('tabler-restore')
                                     ->suffix('col'),
                             ])
@@ -444,13 +501,18 @@ class ProductResource extends Resource
             ->emptyStateDescription('Az "Új termék" gombra kattintva rögzíthet új terméket a rendszerhez.')
             ->emptyStateIcon('tabler-database-search')
             ->columns([
-                TextColumn::make('width')
-                    ->label('Méret')
+                TextColumn::make('id')
+                    ->label('Megnevezés')
                     ->formatStateUsing(function ($record) {
-                        return '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' . $record->width . '/' . $record->height . $record->structure . $record->rim_diameter . '</span></p>';
-                        //return $record->width . '/' . $record->height . $record->structure . $record->rim_diameter;
-                    })->html()
-                    ->searchable(['width', 'height', 'structure', 'rim_diameter'])
+                        if ($record->servvice_name == null) {
+                            $output = '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' .  $record->width . '/' . $record->height . $record->structure . $record->rim_diameter . '</span></p>';
+                        }
+                        if ($record->servvice_name != null) {
+                            $output = '<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt; text-transform: uppercase; ">' .  $record->service_name . '</span></p>';
+                        }
+                        return $output;
+                        })->html()
+                    ->searchable(['id', 'width', 'height', 'structure', 'rim_diameter', 'service_name'])
                     ->description(function ($record): HtmlString {
                         if ($record->description != null) {
                             $text = $record->description;
