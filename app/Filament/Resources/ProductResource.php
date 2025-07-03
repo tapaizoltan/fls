@@ -41,11 +41,11 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationGroup = 'Termékek';
+    protected static ?string $navigationGroup = 'Termékek, szolgáltatások';
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
-    protected static ?string $modelLabel = 'termék';
-    protected static ?string $pluralModelLabel = 'termékek';
+    protected static ?string $modelLabel = 'termék, szolgáltatás';
+    protected static ?string $pluralModelLabel = 'termékek, szolgáltatások';
     protected static ?int $navigationSort = 1;
 
     // public static function getBrandOptions()
@@ -495,10 +495,10 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->heading('Termékek.')
-            ->description('Ebben a modulban rögzítheti és kezelheti az értékesítési folyamatokban résztvevő termékeket.')
-            ->emptyStateHeading('Nincs megjeleníthető termék.')
-            ->emptyStateDescription('Az "Új termék" gombra kattintva rögzíthet új terméket a rendszerhez.')
+            ->heading('Termékek, szolgáltatások.')
+            ->description('Ebben a modulban rögzítheti és kezelheti az értékesítési folyamatokban résztvevő termékeket és szolgáltatásokat.')
+            ->emptyStateHeading('Nincs megjeleníthető termék és/vagy szolgáltatás.')
+            ->emptyStateDescription('Az "Új termék, szolgáltatás" gombra kattintva rögzíthet új terméket vagy szolgáltatást a rendszerhez.')
             ->emptyStateIcon('tabler-database-search')
             ->columns([
                 TextColumn::make('id')

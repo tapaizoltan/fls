@@ -13,7 +13,7 @@ class ListProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->label('Új termék')->icon('tabler-circle-plus')->slideOver()->createAnother(false),
+            Actions\CreateAction::make()->label('Új termék, szolgáltatás')->icon('tabler-circle-plus')->slideOver()->createAnother(false),
         ];
     }
 }
